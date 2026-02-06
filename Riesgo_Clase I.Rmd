@@ -1,0 +1,289 @@
+---
+title: "Teoría del riesgo"
+#subtitle: 'Clase I' 
+author: "Javier Mauricio Sierra"
+#date: "2024-02-10"
+output:
+  html_document:
+    css: assets/Correccion_parciales.css
+    df_print: paged
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: true
+    number_sections: false
+---
+# Metodología 
+
+|                    |                                 |              |
+|--------------------|---------------------------------|--------------|
+| **Corte I 30\%**   | Talleres y/o exposición 40\%        | Parcial 60\% |
+| **Corte II 30\%**  | Talleres y/o exposición 30\%        | Parcial 60\%  |
+|                   | Primer adelanto del proyecto 10\%    |               |
+|                    | * Objetivos                         |               |
+|                    | * Estado del arte                  |               |
+|                    | * Diapositivas en formato beamer    |               |
+|                    | * Exposición                  |               |
+| **Corte III 40\%** | **Si el proyecto esta bien, nota arriba de 4.0**      | Proyecto 100\% |
+|                    |    - Datos                       |              |
+|                    |    - Informe en formato articulo, lateado       |              |
+|                    |    - Código que documente los procedimientos usados   |              |
+|                    |    - Tablero en Bokeh, streamlit, Power BI, Looker Studio ó Shiny   |              |
+|                    |    - Exposición                |              |
+|                   | **Si el proyecto NO esta bien, nota por debajo de 4.0**      | Proyecto 30\% |
+|                   |                                  | Examen final 70\% |
+||||
+
+
+
+# Riesgo financiero 
+
+El riesgo financiero se refiere a la posibilidad de que una entidad (puede ser una persona, una empresa, un proyecto, etc.) enfrente pérdidas financieras o no logre alcanzar sus objetivos financieros debido a una variedad de factores. Estos factores pueden ser internos o externos al ente en cuestión y pueden afectar tanto a inversiones individuales como a carteras de inversión o a la salud financiera de una empresa en su conjunto.
+
+## Introducción 
+
+***Tomado literal del texto guía***
+
+En desarrollo de sus actividades, las entidades financieras se ven sometidas a la ocurrencia de algunos de los riesgos, por lo cual la administración de riesgo en las instituciones financieras tiene por objeto asegurarse de que la institución o inversionista no sufra pérdidas económicas más allá de cierto margen que puede considerarse tolerable; de ahí que debe mejorar el desempeño financiero, tomando en cuenta el rendimiento que puede obtenerse, pero ajustado al riesgo que puede tener. 
+Para una correcta administración del riesgo financiero se han de tener en cuenta las siguientes fases o etapas:
+
+1. **Identificación:** conocer todos los factores riesgos a los que la actividad empresarial puede estar sometida.
+
+2. **Medición:** cuantificar los distintos riesgos identificados y, si es posible, agregarlos para representarlos en una unica magnitud.
+
+3. **Gestión:** acciones mediante las cuales se consiga minimizar el nivel de riesgo.
+
+4. **Control:** verificación de las actuaciones para asegurar que se ha obtenido el riesgo deseado.
+
+## Tipos de activos en el mercado financiero. 
+
+
+Los mercados financieros se caracterizan por una amplia variedad de activos que se pueden clasificar en dos grandes categorías: renta fija y renta variable. Cada categoría tiene sus propias características y tipos de activos específicos que atraen a diferentes perfiles de inversores, dependiendo de sus objetivos de inversión, horizonte temporal y tolerancia al riesgo.
+
+### Renta fija 
+
+La renta fija se caracteriza por pagos de intereses periódicos y la devolución del principal en la fecha de vencimiento. El riesgo asociado incluye el riesgo de crédito, riesgo de tasa de interés y riesgo de reinversión.
+
+Los activos de renta fija proporcionan a los inversores flujos de ingresos predecibles y generalmente ofrecen un menor riesgo en comparación con los activos de renta variable. Estos son algunos de los principales activos de renta fija:
+
+1. **Bonos Gubernamentales:** Emitidos por gobiernos nacionales, regionales o locales para financiar sus actividades. Son considerados de bajo riesgo, especialmente los emitidos por gobiernos de países con economías estables.
+
+2. **Bonos Corporativos:** Emitidos por empresas para recaudar capital. Su riesgo varía según la calificación crediticia de la empresa emisora.
+
+3. **Bonos Municipales:** Emitidos por entidades municipales o locales. Pueden ofrecer ventajas fiscales para los inversores de ciertas jurisdicciones.
+
+4. **Papel Comercial:** Es una forma de deuda corporativa a corto plazo, generalmente con vencimientos de menos de 270 días.
+
+5. **Cédulas Hipotecarias y Bonos de Titulización:** Valores respaldados por hipotecas u otros préstamos. Su riesgo depende de la calidad crediticia del pool de préstamos subyacentes.
+
+
+### Renta Variable 
+
+La renta variable se caracteriza por su potencial de crecimiento y generación de ingresos a través de dividendos, pero está sujeta a la volatilidad del mercado y a los riesgos específicos de la empresa.
+
+Los activos de renta variable ofrecen un mayor potencial de rendimiento a largo plazo, pero con un mayor riesgo y volatilidad en comparación con los activos de renta fija. Los principales activos de renta variable incluyen:
+
+1. **Acciones:** Representan una participación en la propiedad de una empresa. Los inversores se benefician de los dividendos (si se pagan) y del potencial aumento en el valor de las acciones.
+
+2. **Fondos de Inversión y ETFs (Fondos Cotizados en Bolsa):** Permiten a los inversores tener una cartera diversificada de acciones u otros activos. Los ETFs se negocian como una acción en las bolsas de valores.
+
+3. **Participaciones Preferentes:** Una forma híbrida entre acciones y bonos, ofreciendo pagos de dividendos fijos antes que las acciones comunes y con prioridad en caso de liquidación de la empresa.
+
+
+
+### Commodities (Materias Primas)
+
+Los commodities son recursos básicos o materias primas que se intercambian en mercados financieros y que son intercambiables con otros bienes del mismo tipo. Estos se clasifican generalmente en cuatro categorías:
+
+1. **Commodities Energéticos:** Incluyen el petróleo crudo, gas natural, carbón y gasolina. Son esenciales para la economía global, ya que alimentan prácticamente todos los aspectos de la producción y el transporte.
+
+2. **Metales:** Divididos en metales preciosos (como el oro, plata, platino) y metales básicos o industriales (como el cobre, aluminio, zinc). Los metales preciosos a menudo actúan como inversiones de refugio seguro, mientras que los industriales son sensibles a los cambios en la economía global.
+
+3. **Agrícolas:** Incluyen granos (como trigo, maíz, soja), productos blandos (como algodón, café, azúcar) y otros productos alimenticios (como carne de res, cerdo). Son fundamentales para la cadena alimentaria mundial.
+
+4. **Ganadería:** Viven en el mercado de futuros principalmente como ganado y cerdos, importantes para el sector alimentario.
+
+Los inversores y empresas utilizan los mercados de commodities para la especulación y como una forma de cobertura contra el riesgo de fluctuaciones de precios en sus operaciones comerciales. Los precios de los commodities pueden ser extremadamente volátiles, influenciados por factores como cambios en el suministro y la demanda, condiciones climáticas, fluctuaciones del tipo de cambio, y cambios políticos y económicos globales.
+
+### Derivados 
+
+Los derivados son instrumentos financieros cuyo valor se deriva del precio de otro activo, denominado subyacente. Estos activos subyacentes pueden incluir acciones, bonos, commodities, tipos de interés, divisas y más. Los principales tipos de derivados incluyen:
+
+1. **Futuros:** Contratos estandarizados para comprar o vender un activo a un precio acordado en una fecha futura. Se utilizan ampliamente para la cobertura y la especulación.
+
+2. **Opciones:** Contratos que otorgan al comprador el derecho, pero no la obligación, de comprar o vender un activo a un precio específico antes de una fecha determinada. Las opciones se dividen en dos tipos: opciones de compra (call) y opciones de venta (put).
+
+3. **Swaps:** Contratos en los que dos partes acuerdan intercambiar flujos de efectivo futuros según un acuerdo preestablecido. Los swaps comunes incluyen los de tasas de interés, de divisas y de commodities.
+
+4. **Contratos por Diferencia (CFD):** Permiten a los inversores especular sobre los movimientos de precios de un activo sin poseer el activo subyacente. Son populares en mercados de divisas, acciones y commodities.
+
+Los derivados se utilizan para una variedad de propósitos, incluida la cobertura contra riesgos, la especulación sobre movimientos de precios futuros, y el incremento de la exposición al leverage o apalancamiento sin necesidad de un gran desembolso de capital inicial. Sin embargo, también conllevan un alto nivel de riesgo, especialmente cuando se usan para la especulación, debido a su complejidad y al apalancamiento que a menudo implican.
+
+
+# Tipos de riesgo financiero 
+
+Hay varios tipos de riesgo financiero, cada uno asociado con diferentes fuentes de incertidumbre:
+
+### Riesgo de mercado:
+Se relaciona con las fluctuaciones en los precios de los mercados financieros, lo que puede afectar el valor de las inversiones. Este incluye el riesgo de tipos de cambio, el riesgo de tasa de interés, y el riesgo de precios de mercancías o acciones.
+
+### Riesgo de crédito:
+Es el riesgo de pérdida que surge cuando una contraparte en una transacción financiera no cumple con sus obligaciones. Por ejemplo, cuando un prestatario no puede realizar los pagos de un préstamo.
+
+### Riesgo de liquidez:
+Se refiere a la capacidad de una entidad para cumplir con sus obligaciones financieras a corto plazo sin incurrir en pérdidas significativas. Esto incluye el riesgo de liquidez en el mercado (dificultad para vender una inversión a un precio razonable) y el riesgo de liquidez de financiamiento (dificultad para obtener fondos para cubrir obligaciones).
+
+### Riesgo operacional:
+Es el riesgo de pérdida derivado de fallas en los procesos internos, personas y sistemas de una empresa, o de eventos externos. Esto incluye fraude, fallas en los sistemas, errores humanos y desastres naturales.
+
+### Riesgo legal y de cumplimiento:
+Se relaciona con las pérdidas potenciales debido a litigios, sanciones regulatorias, o incumplimiento de contratos.
+
+## Riesgo de mercado 
+
+El riesgo de mercado, también conocido como riesgo sistemático, se refiere a la posibilidad de experimentar pérdidas debido a factores que afectan el desempeño de los mercados financieros en su conjunto. Este tipo de riesgo está asociado con la volatilidad de los precios de los activos financieros, como acciones, bonos, commodities y divisas, y puede ser influenciado por eventos económicos, políticos, sociales y ambientales. A diferencia del riesgo no sistemático, que puede mitigarse mediante la diversificación, el riesgo de mercado afecta a todos los activos de una clase determinada y, por lo tanto, es más difícil de evitar.
+
+### Componentes del Riesgo de Mercado
+
+1. **Riesgo de perdida:** el riesgo de que el rendimiento de los activos financieros sea negativo o menor al rendimiento 
+
+2. **Riesgo de oportunidad:** el riesgo de elegir para un portafolio activos financieros que resulten menos rentables que otros.
+
+3. **Riesgo de liquidez:** la dificultad o imposibilidad de transformar en efectivo un activo o portafolio de activos financieros, es decir, la imposibilidad o dificultad que se puede
+presentar en el momento de vender un activo en el mercado.
+
+4. **Riesgo de inflación:** la inflatión no anticipada se relaciona en forma inversa con el rendimiento real de una inversión, pues el poder adquisitivo del rendimiento será menor en tanto aumente la inflación o será, en términos reales, mayor si la inflación tiende a disminuir
+
+5. **Riesgo de Tasa de Interés:** Se refiere a la posibilidad de que los cambios en las tasas de interés afecten el valor de los instrumentos financieros. Por ejemplo, si las tasas de interés suben, el precio de los bonos existentes tiende a bajar, ya que los nuevos bonos podrían emitirse con tasas más altas, haciéndolos más atractivos.
+
+6. **Riesgo de Tipo de Cambio:** Este riesgo surge de la fluctuación en los precios de las divisas. Las empresas que realizan operaciones en el extranjero están expuestas a este riesgo, ya que el valor de las transacciones puede variar significativamente con los movimientos de las tasas de cambio.
+
+7. **Riesgo de Precio de Acciones:** Es el riesgo de experimentar pérdidas debido a los movimientos en los precios de las acciones. Este riesgo es inherente a la inversión en el mercado de valores y puede ser afectado por una variedad de factores, incluyendo el desempeño de la empresa, las condiciones del mercado, y los cambios en la economía general.
+
+8. **Riesgo de Precios de Mercancías (Commodities):** Afecta a las inversiones en recursos naturales y materias primas como el petróleo, el oro, y los granos. Los precios de estas commodities pueden ser extremadamente volátiles, influenciados por cambios en la oferta y demanda, condiciones climáticas, cambios políticos, y otros factores globales.
+
+9. **Riesgo soberano:** es el riesgo al cual están expuestas las inversiones realizadas en un país, derivado de su soberanía y de sus condiciones económicas; está asociado con la estabilidad política de un país.
+
+10. **Riesgo país:** establece la capacidad financiera que tiene un país para responder por el pago de su deuda externa.
+
+### Gestión del Riesgo de Mercado
+
+La gestión del riesgo de mercado es un componente crítico de la estrategia financiera, tanto para inversores individuales como para corporaciones. Algunas estrategias para gestionar este riesgo incluyen:
+
+- **Diversificación:** Invertir en una variedad de activos o mercados para reducir el impacto de las fluctuaciones en cualquier inversión específica.
+- **Cobertura:** Utilizar instrumentos financieros derivados, como opciones y futuros, para protegerse contra movimientos adversos en los precios de los activos.
+- **Rebalanceo de la cartera:** Ajustar periódicamente la composición de una cartera de inversión para mantener un nivel deseado de exposición al riesgo.
+- **Análisis técnico y fundamental:** Usar análisis para predecir cambios en los mercados y ajustar las estrategias de inversión en consecuencia.
+
+## Riesgo de crédito 
+
+El riesgo de crédito es una de las formas más críticas de riesgo financiero, especialmente relevante para bancos, instituciones financieras y cualquier entidad que otorgue crédito o participe en acuerdos financieros. Este riesgo emerge de la incertidumbre asociada a la capacidad de un prestatario para cumplir con sus obligaciones financieras según los términos acordados, lo que puede resultar en pérdidas para el prestamista o el inversor.
+
+### Componentes del Riesgo de Crédito
+
+El riesgo de crédito puede desglosarse en varios componentes, incluyendo:
+
+1. **Riesgo de incumplimiento:** La posibilidad de que un prestatario falle completamente en el pago de su deuda.
+2. **Riesgo de recuperación:** en caso de presentarse incumplimiento, la cantidad a recuperar no se puede predecir, pues depende de diversos factores, entre ellos, el colateral o aval dado por el deudor.
+3. **Riesgo de mora:** Se refiere al riesgo de que un prestatario pague tarde, pero eventualmente cumpla con sus obligaciones.
+4. **Riesgo de deterioro de crédito:** Ocurre cuando la capacidad de un prestatario para hacer frente a sus obligaciones financieras disminuye, afectando negativamente la valoración de la deuda.
+5. **Riesgo derivado de las condiciones del mercado:** son las pérdidas potenciales que se podrían producir en el tenedor de un portafolio de créditos o de activos financieros como consecuencia de que el valor en el mercado de estos disminuya.
+
+### Evaluación y Gestión
+
+La evaluación del riesgo de crédito implica analizar la solvencia de los prestatarios, lo que puede incluir revisar su historial crediticio, su situación financiera actual, y su capacidad para generar ingresos futuros. Las herramientas y técnicas utilizadas en este proceso incluyen:
+
+- **Análisis financiero:** Examinar los estados financieros del prestatario para evaluar su salud financiera.
+- **Scoring y rating de crédito:** Utilizar modelos estadísticos para asignar un puntaje o calificación a los prestatarios, basándose en una variedad de factores financieros y no financieros.
+- **Provisiones para pérdidas crediticias:** Establecer reservas financieras para cubrir pérdidas potenciales por incumplimientos de crédito.
+- **Diversificación:** Reducir el riesgo de crédito a través de la distribución de la exposición a crédito entre una variedad de prestatarios o tipos de crédito.
+- **Seguros de crédito y derivados de crédito:** Utilizar instrumentos financieros para transferir el riesgo de crédito a terceros.
+
+### Impacto en las Finanzas
+
+El riesgo de crédito tiene un impacto directo en la rentabilidad y la estabilidad financiera de las instituciones que otorgan créditos. Las pérdidas por incumplimiento de pagos pueden reducir los ingresos y afectar negativamente los balances. Además, un aumento en la percepción del riesgo de crédito puede elevar los costos de financiamiento para prestatarios y prestamistas por igual, ya que los prestamistas exigen tasas de interés más altas para compensar el mayor riesgo.
+
+### Regulación y Cumplimiento
+
+La regulación financiera a menudo requiere que las instituciones evalúen cuidadosamente el riesgo de crédito y mantengan niveles adecuados de capital para cubrir sus riesgos crediticios. Esto incluye cumplir con normativas internacionales como los acuerdos de Basilea, que establecen directrices detalladas para la gestión del riesgo de crédito y otros riesgos financieros.
+
+La gestión eficaz del riesgo de crédito es fundamental para la estabilidad del sistema financiero global, ya que un manejo inadecuado puede llevar a crisis financieras, como se ha visto en el pasado con crisis de crédito que han tenido efectos devastadores en economías enteras.
+
+## Riesgo de liquidez 
+
+El riesgo de liquidez es un aspecto crucial en la gestión del riesgo financiero, ya que se refiere a la capacidad de una entidad para satisfacer sus obligaciones de pago a corto plazo sin incurrir en pérdidas significativas. Este riesgo se manifiesta de dos formas principales:
+
+1. **Riesgo de liquidez en el mercado:** Ocurre cuando una entidad no puede vender o liquidar una posición de inversión rápidamente en el mercado sin afectar significativamente el precio del activo. Este riesgo es particularmente relevante en mercados con baja profundidad o en situaciones de alta volatilidad, donde el número de compradores interesados es limitado. Los activos considerados altamente líquidos, como los bonos del gobierno de países estables, generalmente presentan un bajo riesgo de liquidez en el mercado, mientras que activos más especulativos o menos conocidos pueden ser difíciles de vender a precios razonables.
+
+2. **Riesgo de liquidez de financiamiento:** Se refiere a la dificultad de una entidad para obtener los fondos necesarios para cumplir con sus obligaciones financieras. Esto puede deberse a la incapacidad de renovar un préstamo, a condiciones más estrictas impuestas por los prestamistas, o a una súbita retirada de depósitos en el caso de las instituciones bancarias. Este tipo de riesgo es especialmente relevante durante periodos de estrés financiero, cuando el acceso al financiamiento externo puede volverse más costoso o limitado.
+
+La gestión del riesgo de liquidez implica diversas estrategias, incluyendo:
+
+- **Diversificación de las fuentes de financiamiento:** No depender de una sola fuente de financiamiento puede ayudar a mitigar el riesgo de no poder acceder a fondos cuando se necesiten.
+- **Mantenimiento de reservas de liquidez:** Tener disponibles activos líquidos, como efectivo o equivalentes de efectivo, permite a una entidad responder rápidamente a las necesidades de financiamiento.
+- **Planificación financiera y proyecciones de flujo de efectivo:** Una planificación cuidadosa puede ayudar a prever y gestionar las necesidades de liquidez, identificando posibles déficits antes de que ocurran.
+- **Líneas de crédito:** Establecer líneas de crédito con anticipación puede proporcionar un colchón de liquidez en tiempos de necesidad.
+
+
+
+
+## Riesgo operacional 
+
+El riesgo operativo es uno de los componentes más amplios y complejos del riesgo financiero, ya que abarca una gama muy variada de fuentes potenciales de pérdidas. Puede definirse como el riesgo de pérdida resultante de procesos internos inadecuados o fallidos, personas, sistemas o eventos externos. Este riesgo es inherente a todas las operaciones y actividades empresariales, y su gestión es crucial para la estabilidad y rentabilidad de una organización.
+
+### Componentes del Riesgo Operativo
+
+1. **Procesos internos:** Incluye fallas o deficiencias en los procedimientos, políticas y prácticas internas de una empresa. Esto puede ser debido a la falta de controles adecuados, errores en la configuración de los sistemas, o prácticas de gestión deficientes.
+
+2. **Personas:** Se refiere a los errores humanos, ya sean accidentales o por negligencia, así como a actos intencionados de fraude o malversación. La capacitación insuficiente, la supervisión inadecuada y la baja moral pueden contribuir a este tipo de riesgo.
+
+3. **Sistemas:** Abarca los fallos en los sistemas de información, ya sea por problemas técnicos, fallos de software, ataques cibernéticos, o incluso obsolescencia tecnológica, que pueden interrumpir las operaciones de la empresa.
+
+4. **Eventos externos:** Incluye desastres naturales (como terremotos, inundaciones o huracanes), terrorismo, pandemias y cambios regulatorios significativos. Estos eventos están fuera del control de la empresa pero pueden tener un impacto devastador en sus operaciones.
+
+### Gestión del Riesgo Operativo
+
+La gestión efectiva del riesgo operativo implica varios pasos clave:
+
+- **Identificación:** Reconocer las fuentes de riesgo operativo dentro de la organización.
+- **Evaluación:** Medir el impacto potencial y la probabilidad de ocurrencia de estos riesgos.
+- **Monitoreo:** Implementar sistemas para supervisar continuamente los riesgos operativos.
+- **Mitigación:** Desarrollar estrategias para reducir la probabilidad de ocurrencia o el impacto de los riesgos identificados. Esto puede incluir mejorar los controles internos, invertir en tecnología de seguridad, capacitar a los empleados, y desarrollar planes de continuidad del negocio y recuperación ante desastres.
+
+Las herramientas y técnicas estadísticas son fundamentales para evaluar y gestionar el riesgo operativo, ya que permiten a las organizaciones cuantificar su exposición al riesgo y tomar decisiones basadas en datos. La gestión del riesgo operativo no solo protege a la empresa contra pérdidas financieras, sino que también contribuye a la mejora continua de sus procesos y sistemas, aumentando así su eficiencia y efectividad.
+
+## Riesgo legal y de cumplimiento
+
+El riesgo legal y de cumplimiento es una categoría del riesgo financiero que se centra en las consecuencias financieras adversas que puede enfrentar una organización debido a fallas en cumplir con las leyes, regulaciones, códigos de conducta, o estándares de práctica aplicables. Este riesgo es particularmente relevante para las entidades que operan en sectores altamente regulados, como el bancario, financiero, salud, y energético, pero afecta a todas las empresas que deben adherirse a algún marco legal o regulatorio.
+
+### Aspectos del Riesgo Legal
+
+El riesgo legal se refiere a las pérdidas potenciales que resultan de litigios, disputas contractuales, infracciones de propiedad intelectual, o la aplicación de sanciones legales. Puede surgir de:
+
+- **Litigios:** Demandas o procedimientos judiciales pueden resultar en costos legales significativos, acuerdos o sentencias adversas.
+- **Contratos:** La falla en cumplir con los términos contractuales puede llevar a disputas legales y sanciones financieras.
+- **Propiedad Intelectual:** Violaciones de derechos de autor, patentes, marcas comerciales, o secretos comerciales pueden resultar en costosas batallas legales y sanciones.
+- **Regulaciones sectoriales:** Incumplimiento de regulaciones específicas del sector puede resultar en multas y sanciones, así como en daño reputacional.
+
+### Aspectos del Riesgo de Cumplimiento
+
+El riesgo de cumplimiento involucra el riesgo de sufrir pérdidas financieras, sanciones, o daño reputacional debido a la falla en adherirse a las leyes, regulaciones, políticas internas, y estándares éticos. Esto incluye:
+
+- **Regulaciones Financieras:** Cumplir con leyes anti-lavado de dinero (AML), regulaciones contra el financiamiento del terrorismo (CFT), y normas de conocimiento del cliente (KYC) es crucial para instituciones financieras.
+- **Protección de Datos:** La violación de leyes de protección de datos como el GDPR en Europa puede resultar en multas significativas y pérdida de confianza del cliente.
+- **Ética y Conducta:** El incumplimiento de normas éticas y de conducta puede llevar a sanciones regulatorias y daño reputacional.
+
+### Gestión del Riesgo Legal y de Cumplimiento
+
+La gestión eficaz de este tipo de riesgo implica varias estrategias:
+
+- **Cumplimiento Proactivo:** Establecer procesos robustos para asegurar el cumplimiento continuo con todas las leyes y regulaciones aplicables.
+- **Auditorías y Controles Internos:** Implementar auditorías regulares y controles internos para identificar y mitigar riesgos de incumplimiento.
+- **Capacitación y Concienciación:** Proporcionar capacitación regular a los empleados sobre sus obligaciones legales y de cumplimiento.
+- **Asesoría Legal:** Contar con asesoría legal experta para navegar el complejo panorama legal y regulatorio.
+
+# Bibliografía 
+
++ Elementos de estadística en riesgo financiero. Moscote Flórez, Orlando. Usta 2013
++ [Value at Risk, theory and Practice. Glyn A. Holton](https://www.value-at-risk.net)
