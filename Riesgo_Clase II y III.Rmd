@@ -1,0 +1,764 @@
+---
+title: "Teoría del riesgo"
+subtitle: 'Clase II y III' 
+author: "Javier Mauricio Sierra"
+#date: "2024-02-10"
+output:
+  html_document:
+    css: assets/Correccion_parciales.css
+    df_print: paged
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: true
+    number_sections: false
+---
+
+```{r setup, include=FALSE}
+library(reticulate)
+virtualenv_create(envname = "r-reticulate")
+use_virtualenv("r-reticulate", required = TRUE)
+use_python("/Applications/anaconda3/bin/python3", required = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE)
+```
+
+
+## Análisis de mercado e indicadores 
+
+### Análisis fundamental
+
+El análisis fundamental es un método utilizado para evaluar el valor intrínseco de un activo, con el objetivo de predecir los movimientos futuros de sus precios y determinar si está sobrevalorado, infravalorado o correctamente valorado por el mercado. Aunque se aplica más comúnmente a las acciones, este enfoque también se puede utilizar para analizar cualquier tipo de activo financiero, como bonos, commodities y divisas.
+
+El análisis fundamental se basa en la premisa de que el precio de mercado de un activo a menudo difiere de su valor intrínseco debido a factores como las emociones del mercado, las noticias externas y otros elementos temporales. Al calcular el valor real basado en factores fundamentales, los inversores pueden tomar decisiones de inversión más informadas.
+
+Para realizar un análisis fundamental de una empresa y sus acciones, se examinan una variedad de factores cualitativos y cuantitativos, incluyendo:
+
+- **Factores cualitativos**: Estos incluyen la calidad de la gestión de la empresa, su modelo de negocio, la posición en la industria, la competencia, las patentes y la propiedad intelectual, y cualquier ventaja competitiva sostenible.
+
+- **Factores cuantitativos**: Estos se refieren al análisis de los estados financieros de la empresa, incluyendo el balance general, la cuenta de resultados y el estado de flujos de efectivo. Los analistas examinan métricas y ratios financieros clave como el PER (Precio/Ganancia), el ROE (Retorno sobre el Capital), el margen de beneficio, la deuda sobre el capital, entre otros, para evaluar la salud financiera de la empresa, su rentabilidad, crecimiento y eficiencia operativa.
+
+El análisis fundamental también considera factores macroeconómicos, como las tasas de interés, la inflación, el crecimiento económico global y nacional, y las políticas gubernamentales, así como factores de la industria específica, como las tendencias de crecimiento, la regulación y la tecnología emergente.
+
+### Análisis técnico
+
+El análisis técnico es un enfoque utilizado para predecir la dirección futura de los precios de los activos financieros (como acciones, bonos, commodities o divisas) mediante el estudio de los datos históricos del mercado, principalmente los precios y los volúmenes de transacción. A diferencia del análisis fundamental, que se enfoca en evaluar el valor intrínseco de un activo basándose en factores económicos, financieros y otros indicadores cualitativos y cuantitativos, el análisis técnico se centra en identificar patrones y tendencias en los movimientos de precios para tomar decisiones de inversión.
+
+Los principios básicos detrás del análisis técnico incluyen:
+
+#### 1. **El mercado descuenta todo**: 
+
+Este principio sostiene que el precio de un activo financiero refleja toda la información disponible en el mercado, incluyendo todos los datos públicos, privados, conocidos y desconocidos, así como las expectativas futuras. Según este principio, el análisis de los movimientos de precios, más que el de los factores fundamentales subyacentes, es suficiente para tomar decisiones informadas de inversión. Aquí se desarrolla este principio en tres aspectos clave:
+
+1. **Integración de la Información**
+
+  El principio asume que el mercado es eficiente en la integración de información. Esto significa que cualquier noticia, reporte económico, cambio en la política monetaria, o incluso rumores y especulaciones, son rápidamente absorbidos por el mercado y reflejados en los precios de los activos. Los inversores y traders, por lo tanto, no necesitan buscar y analizar exhaustivamente esta información, ya que se considera que los precios actuales son la representación más precisa y actualizada del valor de un activo.
+
+2. **Eficiencia del Mercado**
+
+  Este principio está estrechamente relacionado con la hipótesis del mercado eficiente (HME), que sugiere que es imposible "ganarle al mercado" de manera consistente a través del análisis fundamental o del análisis de noticias porque el mercado ya ha ajustado los precios para reflejar toda la información disponible. Sin embargo, los técnicos usan este principio para buscar patrones o tendencias en los precios que puedan sugerir movimientos futuros, basándose en la idea de que, si bien la información está plenamente reflejada, no todos los participantes del mercado interpretan esta información de la misma manera o al mismo tiempo.
+
+3. **Psicología del Mercado**
+
+  El principio también implica que el mercado refleja la psicología colectiva de todos sus participantes. Esto incluye no solo las reacciones a las noticias y eventos externos, sino también las tendencias humanas hacia la codicia y el miedo, que pueden causar sobrevaloraciones o subvaloraciones temporales de los activos. Los analistas técnicos estudian los patrones de precios y volumen para identificar estos estados psicológicos colectivos y prever posibles cambios en la dirección del mercado.
+
+#### Implicaciones para los Inversores
+
+> La aceptación de este principio lleva a muchos inversores y traders a centrarse en el estudio de gráficos de precios y en el uso de herramientas técnicas para identificar oportunidades de compra y venta, en lugar de intentar analizar las condiciones económicas subyacentes o las finanzas de las empresas individuales. La creencia es que, si el mercado ya ha descontado toda la información, entonces los movimientos futuros de precios pueden predecirse mejor a través del análisis de los precios pasados y presentes.
+
+
+
+#### 2. **Los precios se mueven en tendencias**:
+
+El principio de que "los precios se mueven en tendencias" es uno de los pilares fundamentales del análisis técnico y se basa en la observación de que los precios de los activos financieros tienden a moverse en direcciones identificables a lo largo del tiempo, siguiendo patrones o tendencias que pueden ser alcistas, bajistas o laterales. Este principio ayuda a los inversores y traders a tomar decisiones de compra o venta basadas en la dirección anticipada de estos movimientos de precios.
+
+##### Tipos de Tendencias
+
+1. **Tendencia Alcista (Bullish)**: Se caracteriza por una serie de máximos y mínimos ascendentes. Esto significa que cada pico sucesivo y cada valle en el gráfico de precios es más alto que el anterior. Esta tendencia indica que la demanda supera a la oferta, empujando así los precios al alza. Los inversores buscan comprar durante las tendencias alcistas, anticipando ganancias continuadas.
+
+2. **Tendencia Bajista (Bearish)**: Se define por una serie de máximos y mínimos descendentes. En este caso, cada pico sucesivo y cada valle es más bajo que el anterior, indicando que la oferta supera a la demanda y presionando los precios a la baja. Los inversores pueden buscar vender o incluso considerar posiciones cortas durante tendencias bajistas para capitalizar la caída de los precios.
+
+3. **Tendencia Lateral (Flat o Range-bound)**: Ocurre cuando los precios se mueven dentro de un rango horizontal sin formar máximos y mínimos claramente ascendentes o descendentes. Este patrón sugiere un equilibrio entre oferta y demanda, donde ni los compradores ni los vendedores tienen control definitivo sobre la dirección del precio. Los traders pueden buscar comprar en el soporte inferior del rango y vender en la resistencia superior.
+
+##### Importancia del Principio
+
+Este principio es crucial por varias razones:
+
+- **Predecibilidad**: Aunque no garantiza resultados futuros, identificar una tendencia proporciona una base para predecir movimientos futuros de precios, permitiendo a los traders e inversores tomar decisiones más informadas.
+
+- **Estrategias de Trading**: Permite a los inversores alinear sus estrategias de trading con la dirección general del mercado, aumentando potencialmente sus probabilidades de éxito.
+
+- **Gestión del Riesgo**: Entender las tendencias ayuda a los inversores a gestionar el riesgo, permitiéndoles establecer puntos de entrada y salida más estratégicos para sus operaciones.
+
+##### Cómo Identificar Tendencias
+
+Los analistas utilizan varios métodos para identificar tendencias, incluyendo el análisis visual de gráficos de precios, el uso de medias móviles (por ejemplo, una media móvil ascendente sugiere una tendencia alcista), y otros indicadores técnicos como el MACD o el Índice de Fuerza Relativa (RSI), que pueden ofrecer señales sobre el inicio o la conclusión de una tendencia.
+
+
+
+#### **La historia tiende a repetirse**: 
+
+Se basa en la observación de que los patrones de comportamiento en los precios de los mercados financieros tienden a repetirse a lo largo del tiempo. Este principio se sostiene sobre la premisa de que la psicología del mercado, que es impulsada por las emociones humanas como el miedo, la avaricia, la esperanza y la euforia, no cambia significativamente a lo largo del tiempo. Debido a que los patrones de comportamiento humano detrás de las decisiones de compra y venta permanecen relativamente constantes, los patrones en los movimientos de precios también tienden a repetirse.
+
+1. Psicología del Mercado
+
+La psicología del mercado juega un papel crucial en el análisis técnico. Las emociones y las reacciones psicológicas de los inversores ante eventos externos o cambios en el mercado pueden llevar a patrones predecibles en los gráficos de precios. Por ejemplo, un fuerte movimiento alcista en el precio de una acción a menudo es seguido por una corrección o un retroceso, ya que los inversores toman ganancias, lo que refleja un ciclo repetitivo de euforia seguido de miedo o cautela.
+
+2. Patrones Gráficos
+
+Los patrones gráficos son ejemplos concretos de cómo la historia tiende a repetirse en el análisis técnico. Patrones como el hombro-cabeza-hombro, dobles techos y suelos, triángulos y banderas son reconocidos por los analistas técnicos como indicadores de posibles movimientos futuros de los precios, basándose en su aparición en el pasado. Estos patrones reflejan las fluctuaciones de la oferta y la demanda, así como las transiciones en el sentimiento del mercado, que tienden a seguir ciclos repetitivos.
+
+3. Ciclos de Mercado
+
+El análisis de ciclos de mercado también se basa en el principio de que la historia tiende a repetirse. Los analistas estudian los ciclos históricos del mercado para predecir fases de expansión y contracción en el futuro. Estos ciclos pueden estar relacionados con ciclos económicos, ciclos electorales, o incluso ciclos de tecnología e innovación.
+
+4. Críticas y Limitaciones
+
+Aunque el principio de que "la historia tiende a repetirse" es fundamental en el análisis técnico, también es objeto de críticas. Los críticos argumentan que los patrones del pasado no garantizan los movimientos futuros del mercado debido a la naturaleza cambiante de la economía, la influencia de eventos imprevistos y el desarrollo constante de los mercados financieros. Además, la interpretación de los patrones gráficos puede ser subjetiva, y lo que un analista ve como un patrón significativo, otro puede interpretarlo de manera diferente.
+
+
+### Análisis gráfico
+
+El análisis gráfico, también conocido como chartismo, es una técnica fundamental dentro del análisis técnico que se enfoca en el estudio de los gráficos de precios de los activos financieros para predecir futuros movimientos del mercado. Esta técnica se basa en la identificación de patrones y figuras en los gráficos que históricamente han indicado la continuación de una tendencia o la reversión de la misma. A través del análisis gráfico, los inversores y traders intentan visualizar la psicología del mercado y las fuerzas de oferta y demanda detrás de los movimientos de precios.
+
+#### Componentes Clave del Análisis Gráfico
+
+1. **Tipos de Gráficos**: Los analistas utilizan diversos tipos de gráficos para observar los movimientos de precios, incluyendo gráficos de líneas, de barras, y de velas japonesas. Cada tipo de gráfico proporciona información diferente. Por ejemplo, los gráficos de velas japonesas son particularmente populares por la cantidad de información que ofrecen sobre la acción del precio en un periodo determinado.
+
+2. **Tendencias**: Identificar la tendencia del mercado es fundamental en el análisis gráfico. Las tendencias pueden ser alcistas, bajistas o laterales, y se identifican trazando líneas de tendencia que conectan los máximos y mínimos sucesivos en el precio de un activo. La dirección y la pendiente de estas líneas ayudan a los analistas a entender la dirección predominante del mercado.
+
+3. **Soportes y Resistencias**: Estos conceptos son esenciales en el análisis gráfico. El soporte es el nivel de precio por debajo del cual un activo tiene dificultades para caer, mientras que la resistencia es el nivel por encima del cual le cuesta subir. Estos niveles indican donde las fuerzas de la oferta y la demanda se encuentran en equilibrio y pueden cambiar con el tiempo.
+
+4. **Patrones Gráficos**: Los analistas buscan patrones específicos que señalan la continuación de una tendencia o la reversión. Ejemplos de patrones de continuación incluyen banderas y triángulos, mientras que patrones de reversión incluyen cabeza y hombros, doble techo y doble suelo. Estos patrones, una vez identificados, pueden proporcionar señales para la toma de decisiones de inversión.
+
+5. **Indicadores Técnicos y Osciladores**: Aunque no son exclusivos del análisis gráfico, muchos analistas los utilizan en conjunto con este para confirmar señales o identificar momentos de sobrecompra o sobreventa en el mercado. Ejemplos incluyen el RSI (Índice de Fuerza Relativa), el MACD (Convergencia/Divergencia de la Media Móvil), y las Bandas de Bollinger.
+
+#### Aplicación del Análisis Gráfico
+
+El análisis gráfico se utiliza tanto para el trading de corto plazo como para la inversión a largo plazo. Los traders lo utilizan para identificar oportunidades de entrada y salida, establecer puntos de stop-loss y take-profit, y gestionar el riesgo. En el contexto de inversión a largo plazo, puede ayudar a identificar tendencias de mercado saludables o advertir sobre posibles reversiones de tendencia.
+
+#### Limitaciones
+
+Aunque el análisis gráfico puede ser una herramienta poderosa, también tiene limitaciones. La interpretación de los patrones puede ser subjetiva, y no hay garantías de que los patrones históricos se repitan en el futuro de la misma manera. Además, el análisis gráfico debe ser utilizado en conjunto con otras formas de análisis, como el análisis fundamental, para obtener una visión más completa del mercado y de los activos en los que se invierte.
+
+- **Indicadores técnicos**: Existen numerosos indicadores técnicos que ayudan a analizar las tendencias del mercado, el momento (momentum), la volatilidad y el volumen. Algunos indicadores populares incluyen la media móvil, el índice de fuerza relativa (RSI), el MACD (Moving Average Convergence Divergence) y las bandas de Bollinger.
+
+- **Figuras chartistas**: Los analistas buscan patrones específicos en los gráficos, como triángulos, banderas, hombro-cabeza-hombro, y dobles suelos o techos, que pueden indicar continuaciones o reversas de una tendencia.
+
+### Análisis cuantitativo
+
+El análisis cuantitativo es un enfoque financiero que utiliza técnicas matemáticas y estadísticas para predecir el comportamiento de los mercados financieros y tomar decisiones de inversión. Este método se basa en la premisa de que, mediante el uso de modelos matemáticos y estadísticos, es posible identificar oportunidades de inversión, gestionar riesgos y maximizar los retornos. El análisis cuantitativo se aplica en diversos campos dentro de las finanzas, incluyendo la gestión de carteras, el trading algorítmico, la valoración de activos, y la gestión de riesgos.
+
+#### Promedios móviles
+
+Los promedios móviles son una de las herramientas más fundamentales y ampliamente utilizadas en el análisis técnico. Sirven para suavizar los datos de precios a lo largo de un período de tiempo específico, lo que ayuda a identificar la dirección de la tendencia del mercado al filtrar el "ruido" de las fluctuaciones de precios a corto plazo. Existen varios tipos de promedios móviles, pero los más comunes son el promedio móvil simple (SMA, por sus siglas en inglés) y el promedio móvil exponencial (EMA).
+
+#### Promedio Móvil Simple (SMA)
+
+El Promedio Móvil Simple (SMA, por sus siglas en inglés Simple Moving Average) es una técnica estadística utilizada para analizar series de tiempo. Consiste en calcular el promedio de un conjunto de valores dentro de un periodo específico que "se mueve" a lo largo de la serie de tiempo. A medida que avanza el análisis, el periodo considerado para el cálculo se desplaza, incluyendo el dato más reciente y excluyendo el más antiguo. Es una herramienta muy utilizada en el análisis financiero, especialmente para identificar tendencias en los precios de las acciones, divisas, materias primas, etc.
+
+La fórmula del Promedio Móvil Simple (SMA) es bastante directa. Se calcula sumando los precios de cierre (o cualquier otra variable relevante que se esté analizando) de un activo durante un número específico de períodos de tiempo y luego dividiendo esa suma por el número de períodos. La fórmula es:
+
+>\[ \text{SMA} = \frac{\sum_{i=1}^{n} P_i}{n} \]
+
+Donde:
+
+- \( P_i \) representa el precio de cierre (o la variable de interés) en el período \( i \),
+
+- \( n \) es el número total de períodos incluidos en el promedio.
+
+
+##### Ejemplo 
+
+Para ilustrar cómo funciona el SMA, supongamos que queremos calcular el SMA de 3 períodos para los precios diarios de una acción, que en cinco días consecutivos fueron $10, $11, $12, $13 y $14. 
+
+El cálculo del SMA para estos precios sería el siguiente:
+
+1. Para los primeros tres días: \((10 + 11 + 12) / 3 = 11\)
+2. Para los días 2, 3 y 4: \((11 + 12 + 13) / 3 = 12\)
+3. Para los días 3, 4 y 5: \((12 + 13 + 14) / 3 = 13\)
+
+Por lo tanto, los SMA de 3 períodos para esta serie de precios son 11, 12 y 13, respectivamente.
+
+Ahora, veamos cómo calcularíamos esto en R, un software estadístico y lenguaje de programación muy utilizado en análisis de datos y estadística.
+
+```{r pressure_0, echo= TRUE, eval=TRUE}
+# Precios de la acción para 5 días
+precios <- c(10, 11, 12, 13, 14)
+
+# Calculamos el SMA de 3 períodos
+sma_3 <- filter(precios, rep(1/3, 3), sides = 1)
+
+# Imprimimos el resultado
+print(sma_3)
+```
+
+En este código, usamos la función `filter` del paquete `stats` (que viene preinstalado con R) para calcular el promedio móvil. El segundo argumento de `filter` es el kernel, en este caso `rep(1/3, 3)`, que crea un vector con tres elementos, todos los cuales son \(1/3\), representando los pesos igualmente distribuidos para el promedio de 3 períodos. El argumento `sides = 1` indica que el filtro se aplica de manera unilateral, es decir, utilizando solo datos pasados y actuales para calcular el promedio en cada punto.
+
+##### Ejemplo
+
+Claro, vamos a hacer un ejemplo más detallado utilizando una base de datos simulada para calcular el Promedio Móvil Simple (SMA) de precios de acciones. En R, podemos simular datos de precios de acciones o utilizar datos de ejemplo disponibles en varios paquetes. Para este ejercicio, simularemos precios de acciones y calcularemos el SMA de 20 días, que es comúnmente usado en análisis técnico para identificar tendencias a mediano plazo.
+
+Primero, simulemos una serie de precios de acciones para 100 días. Luego, calcularemos el SMA de 20 días para esta serie.
+
+```{r pressure_1, echo= TRUE, eval=TRUE}
+library(TTR) 
+library(ggplot2) 
+
+# Simulamos precios de acciones para 100 días
+set.seed(123) # Para reproducibilidad
+dias <- 1:100
+precios <- cumsum(runif(100, min = -2, max = 2)) + 100 # Simula cambios diarios en el precio
+
+# Calculamos el SMA de 20 días
+sma_20 <- SMA(precios, n = 20)
+
+# Creamos un dataframe para graficar
+datos <- data.frame(Dia = dias, Precio = precios, SMA20 = sma_20)
+
+# Graficamos los precios con el SMA
+ggplot(datos, aes(x = Dia)) +
+  geom_line(aes(y = Precio, colour = "Precio")) +
+  geom_line(aes(y = SMA20, colour = "SMA 20 días"), linewidth = 1) + # Cambio aquí
+  labs(title = "Precio de Acciones y SMA de 20 días",
+       x = "Día",
+       y = "Precio") +
+  scale_colour_manual("", 
+                      values = c("Precio" = "blue", "SMA 20 días" = "red")) +
+  theme_minimal()
+```
+
+En este código:
+
+1. **Simulación de Precios**: Usamos `runif` para generar cambios diarios aleatorios en el precio de la acción, los cuales sumamos acumulativamente a un precio inicial de 100. Esto simula una serie de precios de acciones para 100 días.
+
+2. **Cálculo del SMA**: Utilizamos la función `SMA` del paquete `TTR` para calcular el Promedio Móvil Simple de 20 días de nuestra serie de precios simulados.
+
+3. **Visualización**: Con `ggplot2`, creamos un gráfico que muestra tanto los precios simulados como el SMA de 20 días, permitiendo visualizar cómo el SMA sigue la tendencia de los precios, suavizando las fluctuaciones diarias.
+
+
+
+#### Promedio Móvil Exponencial (EMA)
+
+El Promedio Móvil Exponencial (EMA, por sus siglas en inglés, Exponential Moving Average) es una técnica de análisis de series de tiempo que, al igual que el Promedio Móvil Simple (SMA), se utiliza para suavizar los datos y ayudar a identificar tendencias. La diferencia principal entre el EMA y el SMA es que el EMA da más peso a los datos más recientes, lo que lo hace más sensible a cambios recientes en los precios o en la variable analizada. Esto puede ser particularmente útil en el análisis financiero para detectar cambios de tendencia más rápidamente que con el SMA.
+
+La fórmula del EMA se define como:
+
+>\[ EMA_{t} = \left( V_t \times \frac{s}{1 + d} \right) + EMA_{t-1} \times \left(1 - \frac{s}{1 + d}\right) \]
+
+Donde:
+
+- \(EMA_{t}\) es el valor del EMA en el tiempo \(t\),
+
+- \(V_t\) es el valor de cierre en el tiempo \(t\),
+
+- \(s\) es el factor de suavizado,
+
+- \(d\) es el número de períodos,
+
+- \(EMA_{t-1}\) es el valor del EMA en el tiempo \(t-1\).
+
+La fórmula para \(s\) en términos de \(d\) es:
+
+\[ s = \frac{2}{d + 1} \]
+
+##### Ejemplo
+
+Utilicemos el mismo conjunto de precios diarios de una acción que en el ejemplo anterior (\$10, \$11, \$12, \$13, \$14) y calculemos el EMA de 3 períodos para ilustrar cómo funciona. Para simplificar, asumiremos que el primer EMA (EMA inicial) es simplemente el primer precio de la serie (\$10).
+
+Primero, calculamos el factor de suavizado para \(d = 3\):
+
+\[ s = \frac{2}{3 + 1} = 0.5 \]
+
+Ahora, apliquemos la fórmula del EMA para los días subsiguientes. Sin embargo, este cálculo se hará mejor con R para ilustrar el proceso paso a paso.
+
+```{r pressure_2, echo= TRUE, eval=TRUE}
+# Precios de la acción para 5 días
+precios <- c(10, 11, 12, 13, 14)
+# Número de períodos
+d <- 3
+# Factor de suavizado
+s <- 2 / (d + 1)
+# Inicializamos el EMA con el primer precio
+ema <- c(precios[1])
+# Calculamos el EMA para cada día
+for (i in 2:length(precios)) {
+  ema[i] <- (precios[i] * s) + (ema[i-1] * (1 - s))
+}
+# Imprimimos el EMA
+print(ema)
+```
+
+Este código inicializa el cálculo del EMA con el primer precio de la serie y luego calcula el EMA para cada día subsiguiente utilizando la fórmula del EMA. El resultado es una serie de valores de EMA que reflejan más de cerca los cambios recientes en los precios de la acción, lo que puede ser útil para el análisis técnico y la toma de decisiones en el trading y la inversión.
+
+
+##### Ejemplo
+
+Consideremos el ejemplo 2 utilizado para ilustrar los promedios moviles simples.
+
+```{r pressure_3, echo= TRUE, eval=TRUE}
+
+library(TTR) # Para SMA y EMA
+library(ggplot2) # Para graficar
+
+# Simulamos precios de acciones para 100 días
+set.seed(123) # Para reproducibilidad
+dias <- 1:100
+precios <- cumsum(runif(100, min = -2, max = 2)) + 100 # Simula cambios diarios en el precio
+
+# Calculamos el SMA de 20 días
+sma_20 <- SMA(precios, n = 20)
+
+# Calculamos el EMA de 20 días
+ema_20 <- EMA(precios, n = 20)
+
+# Creamos un dataframe para graficar
+datos <- data.frame(Dia = dias, Precio = precios, SMA20 = sma_20, EMA20 = ema_20)
+
+# Graficamos los precios con el SMA y el EMA
+ggplot(datos, aes(x = Dia)) +
+  geom_line(aes(y = Precio, colour = "Precio")) +
+  geom_line(aes(y = SMA20, colour = "SMA 20 días"), linewidth = 1) +
+  geom_line(aes(y = EMA20, colour = "EMA 20 días"), linewidth = 1, linetype = "dashed") + # Línea agregada para EMA
+  labs(title = "Precio de Acciones, SMA y EMA de 20 días",
+       x = "Día",
+       y = "Precio") +
+  scale_colour_manual("", 
+                      values = c("Precio" = "blue", "SMA 20 días" = "red", "EMA 20 días" = "green")) + # Colores para EMA
+  theme_minimal()
+```
+
+### Osciladores
+
+Los osciladores son herramientas de análisis técnico utilizadas en el ámbito de las finanzas, especialmente en el trading y la inversión en mercados de valores, divisas (forex), criptomonedas, entre otros. Estos indicadores se diseñan para identificar momentos potenciales de sobrecompra o sobreventa en un activo, basándose en la premisa de que los precios de los activos se mueven en patrones cíclicos o oscilaciones a lo largo del tiempo. La idea es que, después de un periodo de movimiento en una dirección, eventualmente el precio del activo revertirá su curso.
+
+Aquí hay algunos puntos clave sobre los osciladores:
+
+1. **Rango de valores**: Los osciladores fluctúan dentro de un rango definido, típicamente entre 0 y 100, lo que ayuda a identificar condiciones de sobrecompra (cuando el valor del oscilador está cerca del extremo superior de su rango) o de sobreventa (cuando está cerca del extremo inferior).
+
+2. **Tipos de osciladores**: Existen varios tipos de osciladores, cada uno con su propia metodología y propósito. Algunos de los más conocidos incluyen el Índice de Fuerza Relativa (RSI, por sus siglas en inglés), el Oscilador Estocástico, y el MACD (Moving Average Convergence Divergence). Cada uno de estos indicadores utiliza diferentes fórmulas para medir el momentum o la velocidad del movimiento de precios, y la posible reversión de tendencias.
+
+
+### RSI
+
+El Índice de Fuerza Relativa (RSI, por sus siglas en inglés de "Relative Strength Index") es un oscilador de momento que mide la velocidad y el cambio de los movimientos de precios de un activo. Desarrollado por J. Welles Wilder en 1978, el RSI es uno de los indicadores técnicos más utilizados por los traders e inversores para identificar condiciones potenciales de sobrecompra o sobreventa en el mercado, así como para señalar la posible reversión de una tendencia.
+
+El RSI se calcula utilizando la siguiente fórmula:
+
+>\[ \text{RSI} = 100 - \left( \frac{100}{1 + RS} \right) \]
+
+donde:
+
+- \( RS \) es el promedio de los cierres de días alcistas dividido por el promedio de los cierres de días bajistas durante un período específico, típicamente 14 días.
+
+El resultado de esta fórmula es un valor que oscila entre 0 y 100.
+
+#### Interpretación del RSI
+
+- **Sobrecompra y sobreventa**: El RSI ayuda a identificar condiciones de sobrecompra o sobreventa. Tradicionalmente, se considera que un activo está en condición de sobrecompra cuando el RSI está por encima de 70 y en condición de sobreventa cuando está por debajo de 30. Estas condiciones sugieren que el precio del activo podría estar a punto de revertir su dirección.
+  
+- **Divergencia**: Una divergencia ocurre cuando el precio de un activo está haciendo nuevos máximos o mínimos, pero el RSI no lo está, lo que puede ser una señal de que la tendencia actual está perdiendo fuerza y podría estar a punto de revertirse.
+
+- **Niveles de ajuste**: Algunos traders ajustan los niveles de sobrecompra y sobreventa a 80 y 20 para filtrar señales falsas y confirmar tendencias más fuertes.
+
+#### Aplicaciones del RSI
+
+El RSI se puede utilizar en diversos mercados, incluidos los de acciones, divisas (forex), commodities y criptomonedas, entre otros. Es especialmente útil en mercados laterales o de rango, donde el precio oscila dentro de un rango definido en lugar de seguir una tendencia clara al alza o a la baja.
+
+#### Limitaciones del RSI
+
+Puede producir señales falsas, especialmente en mercados con fuertes tendencias donde el precio puede permanecer en condiciones de sobrecompra o sobreventa durante un período extendido. Por esta razón, se recomienda utilizar el RSI junto con otras herramientas y análisis para tomar decisiones de inversión más informadas y precisas.
+
+#### Ejemplo 
+
+Vamos a crear un ejemplo sencillo en R para calcular el Índice de Fuerza Relativa (RSI) utilizando datos simulados de precios de un activo financiero. Este ejemplo mostrará cómo generar datos aleatorios para simular los precios de un activo, calcular las variaciones diarias de precios, y finalmente calcular el RSI.
+
+Supongamos que queremos simular los precios diarios de un activo durante 100 días y luego calcular el RSI con un período de 14 días, que es el estándar comúnmente utilizado.
+
+1. **Generar datos simulados**: Crearemos una serie de precios simulados para un activo financiero.
+
+2. **Calcular las variaciones diarias de precios**: Basándonos en los precios simulados, calcularemos las ganancias y pérdidas diarias.
+
+3. **Calcular el RSI**: Utilizaremos las variaciones diarias de precios para calcular el promedio de ganancias y pérdidas, y luego usaremos esta información para calcular el RSI.
+
+
+```{r pressure_4, echo= TRUE, eval=TRUE}
+library(TTR)
+
+# Generar datos simulados
+set.seed(123) # Para reproducibilidad
+precios <- cumprod(1 + rnorm(100, 0.0005, 0.01)) # Simular precios diarios
+
+# Calcular el RSI
+rsi_valores <- RSI(precios, n=14)
+
+# Visualizar el RSI
+plot(rsi_valores, type='l', main="Índice de Fuerza Relativa (RSI)", ylab="RSI", xlab="Tiempo")
+abline(h=c(30,70), col="red", lty=2) # Líneas de sobrecompra y sobreventa
+```
+
+En este ejemplo:
+
+- Utilizamos la función `rnorm` para generar retornos diarios simulados de un activo, basados en una media (`mean`) de 0.05% y una desviación estándar (`sd`) de 1%, que luego convertimos en precios mediante el cálculo del producto acumulado (`cumprod`).
+
+- Usamos el paquete `TTR` (Technical Trading Rules) para calcular el RSI de nuestra serie de precios simulados. `TTR` es un paquete en R que proporciona funciones para varios indicadores técnicos.
+
+- Finalmente, graficamos el RSI y añadimos líneas horizontales en los niveles de 30 y 70 para indicar áreas de sobreventa y sobrecompra respectivamente.
+
+### Oscilador estocástico
+
+El Oscilador Estocástico es un indicador de momentum utilizado en el análisis técnico que sigue la velocidad y el momentum de los precios de los activos para predecir futuras tendencias de precios. Fue desarrollado por George C. Lane en la década de 1950. El concepto detrás del oscilador estocástico se basa en la observación de que, en un mercado en tendencia, los precios de cierre tienden a cerrar cerca del extremo alto o bajo del rango de precios reciente.
+
+El oscilador estocástico se compone de dos líneas principales:
+
+1. **%K**, que es la línea estocástica principal, mide la posición relativa del precio de cierre actual en relación con el rango alto-bajo durante un período de tiempo específico.
+
+2. **%D**, que es una media móvil del %K, suavizando así los resultados para identificar tendencias más claramente.
+
+
+La fórmula para calcular el %K es:
+
+>\[ \%K = \frac{(Precio\ de\ Cierre\ Actual - Mínimo\ Bajo\ en\ N\ períodos)}{(Máximo\ Alto\ en\ N\ períodos - Mínimo\ Bajo\ en\ N\ períodos)} \times 100 \]
+
+El %D se calcula tomando una media móvil simple o exponencial (usualmente de 3 períodos) del %K.
+
+#### Interpretación
+
+- **Sobrecompra y Sobreventa**: Los valores del oscilador estocástico oscilan entre 0 y 100. Los niveles tradicionalmente utilizados para identificar condiciones de sobrecompra son aquellos por encima de 80, y los niveles por debajo de 20 se consideran indicativos de condiciones de sobreventa. Cuando el indicador se mueve fuera de estos rangos, podría sugerir una reversión de precios próxima.
+  
+- **Cruces**: Un aspecto clave para interpretar el oscilador estocástico son los cruces entre las líneas %K y %D. Cuando la línea %K cruza por encima de la línea %D, puede ser interpretado como una señal de compra. Por el contrario, cuando la línea %K cruza por debajo de la línea %D, puede ser visto como una señal de venta.
+
+- **Divergencias**: Las divergencias entre el oscilador estocástico y la tendencia de precios del activo pueden indicar una reversión potencial. Por ejemplo, si los precios marcan un nuevo alto pero el oscilador no, esto puede sugerir una pérdida de momentum y una posible reversión a la baja.
+
+>> El Oscilador Estocástico es ampliamente utilizado por los traders e inversores para identificar áreas potenciales de reversión de precios, así como para confirmar tendencias junto con otros indicadores. Sin embargo, como con cualquier otro indicador técnico, es recomendable usar el oscilador estocástico en conjunto con otras herramientas de análisis técnico y análisis fundamental para tomar decisiones de inversión más informadas y reducir el riesgo de señales falsas.
+
+#### Ejemplo
+
+Para ilustrar el funcionamiento del oscilador estocástico con los datos simulados, calculamos el indicador para los últimos 10 días del conjunto de datos. Aquí están los resultados:
+
+- **Precio**: Este es el precio simulado del activo para cada día.
+
+- **Min_14**: El mínimo precio del activo en los últimos 14 días.
+
+- **Max_14**: El máximo precio del activo en los últimos 14 días.
+
+- **%K**: La línea principal del oscilador estocástico, calculada para cada día.
+
+- **%D**: La media móvil simple de 3 días de %K, que suaviza la línea %K para identificar tendencias.
+
+
+Por ejemplo, en el último día (día 99), el precio es aproximadamente 1.1572, con un mínimo de 1.064 y un máximo de 1.16 en los últimos 14 días. El valor de %K es aproximadamente 97.08, indicando que el precio de cierre está cerca al tope del rango de precio de los últimos 14 días. El valor de %D, que es una media móvil de %K, es aproximadamente 99.24166, lo que ayuda a suavizar las fluctuaciones de %K para identificar mejor la tendencia.
+
+En los días anteriores, se puede observar cómo varían los valores de %K y %D, lo que refleja los cambios en la posición del precio de cierre relativo a su rango de precios de 14 días. Por ejemplo, un valor de %K de 100 (día 91 y 95) indica que el precio de cierre fue el máximo en su rango de 14 días, señalando potencialmente una condición de sobrecompra si se mantiene consistentemente alto.
+
+>Los traders e inversores pueden utilizar estos cambios en %K y %D, especialmente los cruces entre estas dos líneas y su comparación con los niveles de sobrecompra (>80) y sobreventa (<20), para tomar decisiones de trading. Por ejemplo, un cruce de %K por encima de %D puede ser visto como una señal de compra, mientras que un cruce de %K por debajo de %D podría interpretarse como una señal de venta, siempre considerando el contexto del mercado y otros indicadores para una decisión más informada.
+
+##### Explicación de código
+
+El código define una función en R, `calcular_oscilador_estocastico`, destinada a calcular el oscilador estocástico para un conjunto de datos financieros, típicamente precios de acciones o de otro activo financiero. La función toma como entrada un `data.frame` (df), el cual debe contener al menos una columna denominada `Precio`, y dos parámetros opcionales que definen los periodos sobre los cuales se realizan los cálculos: `k_periodos` para el cálculo de %K, y `d_periodos` para el cálculo de %D, con valores por defecto de 14 y 3 respectivamente. A continuación, se detalla el proceso que sigue la función:
+
+1. **Cálculo de %K**:
+
+   - Utiliza la función `mutate` del paquete `dplyr` para agregar nuevas columnas al `data.frame` original.
+   
+   - `Min_14`: Esta columna se calcula utilizando `rollapply` con la función `min`, aplicada a la columna `Precio` y un ancho de ventana definido por `k_periodos` (por defecto 14). Esto representa el mínimo precio en cada ventana de `k_periodos` días. Se usa `align = "right"` para alinear el resultado al final de la ventana y `partial = TRUE` para permitir ventanas incompletas (menos de `k_periodos` días) al inicio del conjunto de datos.
+   
+   - `Max_14`: Similar a `Min_14`, pero calcula el máximo precio en la ventana de `k_periodos` días.
+   
+   - `%K`: Se calcula como el porcentaje de la posición del precio actual dentro del rango definido por `Min_14` y `Max_14`, escalado a 100. Esto da una idea de dónde se encuentra el precio de cierre en relación con su rango de precios recientes.
+
+2. **Cálculo de %D**:
+
+   - Después de calcular `%K`, la función utiliza nuevamente `mutate` para agregar la columna `%D`, que se calcula como el promedio móvil simple (PMS) de `%K` sobre `d_periodos` (por defecto 3) usando `rollmean`. `%D` suaviza las fluctuaciones de `%K` para proporcionar una señal más clara y se alinea también a la derecha con `align = "right"` y permite ventanas parciales con `partial = TRUE`.
+
+3. **Retorno del Data Frame Modificado**:
+
+   - Finalmente, la función retorna el `data.frame` modificado, que ahora incluye las columnas originales más `Min_14`, `Max_14`, `%K`, y `%D`.
+
+
+```{r pressure_5, echo= TRUE, eval=TRUE}
+library(zoo)
+library(dplyr)
+
+set.seed(123)
+precios <- cumprod(1 + rnorm(100, mean = 0.0005, sd = 0.01))
+
+df_precios <- data.frame(Precio = precios)
+
+calcular_oscilador_estocastico <- function(df, k_periodos = 14, d_periodos = 3) {
+  # Calculo de %K
+  df <- df %>%
+    mutate(Min_14 = rollapply(Precio, width = k_periodos, FUN = min, align = "right", partial = TRUE),
+           Max_14 = rollapply(Precio, width = k_periodos, FUN = max, align = "right", partial = TRUE),
+           '%K' = (Precio - Min_14) / (Max_14 - Min_14) * 100)
+  
+  # Calculo de  %D como el PMS de %K
+  df <- df %>% mutate('%D' = rollmean(`%K`, k = d_periodos, align = "right", partial = TRUE))
+  
+  return(df)
+}
+
+df_oscilador <- calcular_oscilador_estocastico(df_precios)
+
+tail(df_oscilador, 10)
+```
+
+
+
+```{r pressure_6, echo= FALSE, eval=TRUE}
+# Asegurándose de que todas las librerías necesarias están cargadas
+library(ggplot2)
+library(zoo)
+library(dplyr)
+
+set.seed(123)
+precios <- cumprod(1 + rnorm(100, mean = 0.0005, sd = 0.01))
+
+df_precios <- data.frame(Precio = precios)
+
+calcular_oscilador_estocastico <- function(df, k_periodos = 14, d_periodos = 3) {
+  # Calculo de %K
+  df <- df %>%
+    mutate(Min_14 = rollapply(Precio, width = k_periodos, FUN = min, align = "right", partial = TRUE),
+           Max_14 = rollapply(Precio, width = k_periodos, FUN = max, align = "right", partial = TRUE),
+           '%K' = (Precio - Min_14) / (Max_14 - Min_14) * 100)
+  
+  # Calculo de  %D como el PMS de %K
+  df <- df %>% mutate('%D' = rollmean(`%K`, k = d_periodos, align = "right", partial = TRUE))
+  
+  return(df)
+}
+
+df_oscilador <- calcular_oscilador_estocastico(df_precios)
+
+# Creando el gráfico
+ggplot(data = df_oscilador, aes(x = seq_along(Precio))) + 
+  geom_line(aes(y = `%K`, colour = "%K")) + 
+  geom_line(aes(y = `%D`, colour = "%D")) +
+  labs(title = "Comparación de Precio, %K y %D",
+       x = "Tiempo",
+       y = "Valor") +
+  scale_colour_manual(values = c("%K" = "red", "%D" = "green")) +
+  theme_minimal()
+```
+ 
+
+### MACD (Moving Average Convergence Divergence)
+
+El indicador de Convergencia y Divergencia de Medias Móviles (MACD, por sus siglas en inglés de Moving Average Convergence Divergence) es una herramienta de análisis técnico utilizada para identificar cambios potenciales en la dirección del mercado, la fuerza del movimiento, el impulso y la duración de una tendencia en el precio de un activo.
+
+El MACD se calcula utilizando medias móviles exponenciales de dos longitudes diferentes. La idea básica detrás del MACD es comparar el comportamiento a corto plazo del precio de un activo con su comportamiento a largo plazo. Esto se hace para identificar cuándo el comportamiento a corto plazo está divergiendo o convergiendo con el comportamiento a largo plazo.
+
+
+**Componentes del MACD:**
+
+* **Línea MACD:** Es la diferencia entre dos EMAs, una de período corto (EMA_corto) y otra de período largo (EMA_largo). La EMA_corto se suele configurar con un período de 12 y la EMA_largo con un período de 26.
+
+* **Línea de señal:** Es una EMA de la línea MACD, generalmente con un período de 9. 
+
+* **Histograma MACD:** Representa la diferencia entre la línea MACD y la línea de señal.
+
+**Interpretación del MACD:**
+
+* **Convergencia:** Cuando la línea MACD se acerca a la línea de señal desde abajo, indica una posible **debilitación de la tendencia bajista** o un **inicio de tendencia alcista**.
+
+* **Divergencia:** Cuando la línea MACD se aleja de la línea de señal desde abajo, indica una posible **intensificación de la tendencia bajista**.
+
+* **Cruces de la línea de señal:** Cuando la línea MACD cruza la línea de señal por encima, indica una **señal de compra**. Cuando la línea MACD cruza la línea de señal por debajo, indica una **señal de venta**.
+
+* **Histograma MACD:** Un histograma positivo indica un **impulso alcista**, mientras que un histograma negativo indica un **impulso bajista**.
+
+**Limitaciones del MACD:**
+
+* El MACD es un indicador **retardado**, lo que significa que no refleja los cambios en el precio de forma instantánea.
+
+* El MACD puede generar **señales falsas**, especialmente en mercados volátiles.
+
+* La configuración de los períodos de las EMAs puede afectar significativamente la interpretación del indicador.
+
+```{r pressure_7, echo= FALSE, eval=TRUE}
+library(tidyverse)
+library(TTR) # Asegúrate de que este paquete está instalado
+
+# Fijamos la semilla para reproducibilidad
+set.seed(123)
+
+# Generamos los precios simulados
+precios <- cumprod(1 + rnorm(100, 0.0005, 0.01))
+
+# Convertimos los precios a un data frame
+df <- data.frame(Precio = precios)
+
+# Calculamos las EMAs
+df$EMA_12 <- EMA(df$Precio, n = 12)
+df$EMA_26 <- EMA(df$Precio, n = 26)
+
+# Calculamos la línea MACD y la línea de señal
+df$MACD <- df$EMA_12 - df$EMA_26
+df$Signal <- EMA(df$MACD, n = 9)
+
+# Calculamos el histograma MACD
+df$Histograma <- df$MACD - df$Signal
+
+# Visualizamos el indicador MACD y el precio
+ggplot(df, aes(x = 1:nrow(df))) +
+  geom_line(aes(y = Precio, color = "Precio")) +
+  labs(title = "Precio y Indicador MACD", x="día", color = "Leyenda") +
+  theme_minimal()
+
+ggplot(df, aes(x = 1:nrow(df))) +
+  geom_line(aes(y = MACD, color = "MACD"), color = "blue") +
+  geom_line(aes(y = Signal, color = "Señal"), color = "red") +
+  geom_bar(aes(y = Histograma, fill = "Histograma"), stat = "identity", color = "gray") +
+  labs(fill = "Leyenda",x="día") +
+  theme_minimal()
+```
+
+
+Para calcular el MACD, necesitamos seguir estos pasos:
+
+1. Generar la serie de precios.
+2. Calcular la EMA de 12 días y la EMA de 26 días para la serie de precios.
+3. Calcular la línea MACD como la diferencia entre la EMA de 12 días y la EMA de 26 días.
+4. Calcular la línea de señal como la EMA de 9 días de la línea MACD.
+5. Opcionalmente, calcular el histograma MACD como la diferencia entre la línea MACD y la línea de señal.
+
+
+La gráfica de arriba muestra tanto la evolución del precio simulado como el indicador MACD derivado de estos precios
+
+1. **Precio:** La parte superior muestra la trayectoria del precio, que parece seguir una tendencia ligeramente ascendente con volatilidad inherente, como se esperaría de un paseo aleatorio con una tendencia positiva ligera.
+
+2. **Línea MACD (azul):** Representa la diferencia entre la EMA de 12 días y la EMA de 26 días. Movimientos por encima y por debajo de cero pueden indicar cambios en el impulso del mercado. Cuando la línea MACD cruza por encima de la línea de señal, puede interpretarse como una señal de compra; cuando cruza por debajo, puede interpretarse como una señal de venta.
+
+3. **Línea de Señal (rojo):** Es una EMA de 9 días de la línea MACD. Actúa como un "suavizador" para la línea MACD, y sus cruces proporcionan señales de entrada o salida.
+
+4. **Histograma (gris-rojo):** Muestra la diferencia entre la línea MACD y la línea de señal. Un histograma positivo (por encima de cero) indica que la línea MACD está por encima de la línea de señal (momento alcista), y un histograma negativo (por debajo de cero) indica que la línea MACD está por debajo de la línea de señal (momento bajista). El aumento en la altura del histograma sugiere un fortalecimiento en el impulso en la dirección actual, mientras que una disminución sugiere un debilitamiento.
+
+#### **Opción de gráfico usando python**
+
+Tener en cuenta que la manera como aleatoriza python es distinta a como lo hace python, al menos en este caso. Se recomeinda usar una base de datos en lugar de datos creados de forma aleatoria.
+
+```{python pressure_7_1, echo= FALSE, eval=TRUE}
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# Definimos la semilla aleatoria
+np.random.seed(123)
+
+# Generamos los precios simulados
+precios = np.cumprod(1 + np.random.normal(0.0005, 0.01, 100))
+
+# Creamos un DataFrame
+df = pd.DataFrame({"Precio": precios})
+
+# Calculamos las EMAs utilizando ewm de Pandas
+df["EMA_12"] = df["Precio"].ewm(span=12, adjust=False).mean()
+df["EMA_26"] = df["Precio"].ewm(span=26, adjust=False).mean()
+
+# Calculamos la línea MACD y la línea de señal
+df["MACD"] = df["EMA_12"] - df["EMA_26"]
+df["Signal"] = df["MACD"].ewm(span=9, adjust=False).mean()
+
+# Calculamos el histograma MACD
+df["Histograma"] = df["MACD"] - df["Signal"]
+
+# Configuración de la visualización
+plt.figure(figsize=(10, 6))
+
+# Gráfico del precio
+plt.subplot(211)
+plt.plot(df["Precio"], label="Precio", color='navy')
+plt.legend(loc='upper left')
+plt.title("Evolución del Precio")
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+# Ajuste del espacio entre los subplots
+plt.subplots_adjust(hspace=0.5)
+
+# Gráfico del MACD
+plt.subplot(212)
+plt.plot(df["MACD"], color="blue", label="MACD", linewidth=1.5)
+plt.plot(df["Signal"], color="red", label="Señal", linestyle='--', linewidth=1.5)
+plt.bar(df.index, df["Histograma"], color="grey", label="Histograma", alpha=0.7)
+plt.legend(loc='upper left')
+plt.title("Indicador MACD")
+plt.xlabel("Día")
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+plt.show()
+```
+
+#### Lectura sugerida
+
+* [Estrategias del indicador MACD trading ](https://www.avatrade.es/educacion/professional-trading-strategies/macd-trading-strategies)
+
+### Bandas de Bollinger
+
+Las Bandas de Bollinger son un popular indicador técnico utilizado en el análisis de mercados financieros que fue desarrollado por John Bollinger en la década de 1980. Este indicador se utiliza para medir la volatilidad del mercado y para identificar condiciones de sobrecompra o sobreventa de un activo. Las Bandas de Bollinger consisten en tres líneas que se trazan en relación con el precio de un activo en un gráfico:
+
+1. **La Banda Media**: Normalmente, es una media móvil simple (MMS) de 20 períodos, aunque este valor puede ajustarse según las preferencias del analista o las características del activo. La banda media sirve como base para el cálculo de las bandas superior e inferior y representa la tendencia a medio plazo del precio del activo.
+
+2. **La Banda Superior**: Se calcula añadiendo a la banda media un número determinado de desviaciones estándar del precio del activo. Esta cantidad suele ser de dos desviaciones estándar, pero, al igual que el período de la media móvil, puede ajustarse. La banda superior indica un nivel de precios que podría considerarse relativamente alto o de sobrecompra.
+
+3. **La Banda Inferior**: Se calcula sustrayendo el mismo número de desviaciones estándar de la banda media. Al igual que la banda superior, la banda inferior indica un nivel de precios que podría considerarse relativamente bajo o de sobreventa.
+
+Las Bandas de Bollinger se expanden y contraen en respuesta a la volatilidad del mercado. Durante períodos de alta volatilidad, las bandas se amplían, lo que refleja un mayor rango de movimiento de precios. Durante períodos de baja volatilidad, las bandas se contraen, indicando que el precio se mueve dentro de un rango más estrecho.
+
+**Aplicaciones de las Bandas de Bollinger:**
+
+- **Identificación de sobrecompra/sobreventa**: Cuando el precio de un activo toca o cruza la banda superior, puede interpretarse como una señal de que el activo está en condiciones de sobrecompra. De manera similar, si el precio toca o cruza la banda inferior, puede indicar una condición de sobreventa.
+
+- **Volatilidad del mercado**: Las bandas amplias indican alta volatilidad, mientras que las bandas estrechas señalan baja volatilidad. Este conocimiento puede ayudar a los inversores a ajustar sus estrategias según el entorno de mercado.
+
+- **Squeeze de Bollinger**: Un "squeeze" ocurre cuando las bandas se contraen significativamente y se considera un indicador de una futura gran movida en el precio, aunque el squeeze en sí no indica la dirección de esta movida.
+
+#### Ejemplo
+
+```{r pressure_8, echo= FALSE, eval=TRUE}
+# Cargamos las librerías necesarias
+library(ggplot2)
+library(TTR) # TTR proporciona funciones para calcular medias móviles y otras herramientas técnicas
+
+# Establecemos la semilla para reproducibilidad
+set.seed(123)
+
+# Generamos los precios simulados
+precios <- cumprod(1 + rnorm(100, mean = 0.0005, sd = 0.01))
+
+# Calculamos la media móvil simple de 20 días
+sma_20 <- SMA(precios, n=20)
+
+# Calculamos la desviación estándar móvil de 20 días
+sd_20 <- runSD(precios, n=20)
+
+# Calculamos las bandas superior e inferior
+upper_band <- sma_20 + (2 * sd_20)
+lower_band <- sma_20 - (2 * sd_20)
+
+# Creamos el data.frame para el gráfico
+data_frame <- data.frame(
+  Dia = 1:length(precios),
+  Precios = precios,
+  SMA_20 = sma_20,
+  Upper_Band = upper_band,
+  Lower_Band = lower_band
+)
+
+# Graficamos utilizando ggplot2
+ggplot(data_frame, aes(x = Dia)) +
+  geom_line(aes(y = Precios), color = "blue") +
+  geom_line(aes(y = SMA_20), color = "green", na.rm = TRUE) +
+  geom_line(aes(y = Upper_Band), color = "red", linetype = "dashed", na.rm = TRUE) +
+  geom_line(aes(y = Lower_Band), color = "red", linetype = "dashed", na.rm = TRUE) +
+  geom_ribbon(aes(ymin = Lower_Band, ymax = Upper_Band), fill = "red", alpha = 0.1, na.rm = TRUE) +
+  labs(title = "Bandas de Bollinger", x = "Día", y = "Precio") +
+  scale_colour_manual(values = c("Bandas: Superior e inferior" = "red", "SMA 20 días" = "green", "Precio" = "blue")) +
+  theme_minimal()
+```
+
