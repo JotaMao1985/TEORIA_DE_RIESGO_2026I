@@ -1,0 +1,241 @@
+---
+title: "Teoría del riesgo"
+#subtitle: 'Clase I' 
+author: "Javier Mauricio Sierra"
+#date: "2024-02-10"
+output:
+  html_document:
+    css: assets/Correccion_parciales.css
+    df_print: paged
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: true
+    number_sections: false
+---
+
+# **ACTIVIDAD EVALUATIVA - TEORÍA DEL RIESGO**
+## **Clases II y III: Análisis de Mercado e Indicadores Técnicos**
+### Profesor: Javier Mauricio Sierra
+
+---
+
+## **INSTRUCCIONES GENERALES**
+
+Esta actividad está diseñada para evaluar su comprensión profunda de los conceptos de análisis técnico, fundamental y cuantitativo. Cada ejercicio requiere razonamiento crítico, cálculos precisos y justificación de sus respuestas. 
+
+**Criterios de evaluación:**
+- Claridad en el desarrollo de cálculos y procedimientos
+- Justificación teórica de las respuestas
+- Capacidad de análisis e interpretación de resultados
+- Aplicación práctica de los conceptos
+
+---
+
+## **EJERCICIO 1: Principios del Análisis Técnico (15 puntos)**
+
+Durante la pandemia de COVID-19 (marzo 2020), los mercados financieros experimentaron caídas históricas seguidas de una recuperación acelerada impulsada por estímulos gubernamentales masivos.
+
+**a)** Explique cómo el principio "el mercado descuenta todo" se manifestó durante este periodo. Argumente si este principio fue completamente válido considerando que la información sobre la duración y efectos de la pandemia era incierta.
+
+**b)** Identifique cuál de los tres principios del análisis técnico (el mercado descuenta todo, los precios se mueven en tendencias, la historia tiende a repetirse) mostró mayor debilidad durante este evento extraordinario. Justifique su respuesta con argumentos sólidos.
+
+---
+
+## **EJERCICIO 2: Cálculo de Promedios Móviles (15 puntos)**
+
+Una acción tecnológica registró los siguientes precios de cierre durante 7 días consecutivos:
+
+| Día | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:-----:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Precio ($) | 45 | 48 | 46 | 50 | 52 | 49 | 51 |
+
+**a)** Calcule manualmente el SMA de 3 períodos para los días 3, 4, 5, 6 y 7. Muestre el procedimiento completo.
+
+**b)** Calcule el EMA de 3 períodos para los mismos días, utilizando como EMA inicial el precio del día 1 ($45). Use un factor de suavizado s = 2/(d+1). Muestre todos los cálculos paso a paso.
+
+**c)** Compare los valores obtenidos en a) y b). ¿Cuál indicador responde más rápidamente a los cambios recientes en el precio? Explique por qué esto ocurre matemáticamente.
+
+---
+
+## **EJERCICIO 3: Análisis del RSI (15 puntos)**
+
+Un analista calculó el RSI de 14 días para una criptomoneda y obtuvo los siguientes valores durante una semana:
+
+- Lunes: RSI = 72
+- Martes: RSI = 78
+- Miércoles: RSI = 85
+- Jueves: RSI = 81
+- Viernes: RSI = 76
+
+Simultáneamente, el precio de la criptomoneda continuó subiendo todos los días de la semana.
+
+**a)** Interprete la situación del mercado según los valores de RSI. ¿Qué sugieren estos valores sobre las condiciones de compra/venta?
+
+**b)** El viernes por la tarde, el RSI baja a 76 pero el precio alcanza su máximo histórico. Explique qué fenómeno técnico está ocurriendo y qué implicaciones tiene para las decisiones de inversión.
+
+**c)** Un estudiante argumenta: "Como el RSI está por encima de 70, debo vender inmediatamente porque el activo está sobrevalorado". Critique esta afirmación identificando al menos dos errores conceptuales y proponga una estrategia más robusta.
+
+---
+
+## **EJERCICIO 4: Oscilador Estocástico - Aplicación Práctica (15 puntos)**
+
+Los últimos 14 días de trading de una acción mostraron un precio máximo de $120 y un precio mínimo de $100. Hoy, el precio de cierre fue $115.
+
+**a)** Calcule el valor de %K para el día de hoy. Muestre la fórmula y el procedimiento.
+
+**b)** Si los valores de %K de los últimos 3 días fueron: 85, 90 y el calculado en (a), calcule el valor de %D (media móvil simple de 3 períodos de %K).
+
+**c)** Basándose en sus cálculos, si %D hace 3 días era 70 y %K cruzó por debajo de %D ayer, ¿qué señal técnica se generó? ¿Qué acción debería considerar un trader técnico? Justifique.
+
+---
+
+## **EJERCICIO 5: Comparación Crítica - Análisis Fundamental vs. Técnico (10 puntos)**
+
+Una empresa de retail presenta los siguientes escenarios:
+
+**Escenario A (Análisis Fundamental):**
+- ROE: 15% (excelente)
+- Crecimiento de ingresos: 20% anual
+- Deuda/Capital: 0.3 (saludable)
+- PER: 8 (aparentemente subvalorada)
+
+**Escenario B (Análisis Técnico):**
+- Precio en tendencia bajista durante 6 meses
+- RSI: 28 (sobreventa)
+- Volumen de venta creciente
+- Patrón de "doble techo" formado
+
+Como analista de riesgo, debe recomendar una decisión de inversión a un cliente con horizonte de inversión de 3 años.
+
+**Desarrolle:**
+- ¿Qué enfoque priorizaría y por qué?
+- ¿Cómo integraría ambos análisis para una decisión más robusta?
+- Identifique los riesgos de ignorar cualquiera de los dos enfoques.
+
+---
+
+## **EJERCICIO 6: MACD - Interpretación Avanzada (10 puntos)**
+
+Un trader obtiene el siguiente output de MACD para una acción:
+
+- Línea MACD: 2.5
+- Línea de señal: 1.8
+- Histograma: +0.7
+
+Hace 5 días:
+- Línea MACD: -1.2
+- Línea de señal: -0.5
+- Histograma: -0.7
+
+**a)** Describa qué cambio fundamental ocurrió en el momentum del activo entre hace 5 días y hoy.
+
+**b)** Identifique qué tipo de señal de trading se generó (cruce alcista/bajista) y en qué momento aproximado ocurrió.
+
+**c)** El estudiante nota que aunque el histograma es positivo, está disminuyendo en los últimos 2 días (era +0.9 hace 2 días). ¿Qué advertencia proporciona esta información sobre la fortaleza de la tendencia actual?
+
+---
+
+## **EJERCICIO 7: Bandas de Bollinger - Caso Aplicado (10 puntos)**
+
+Durante 20 días, el precio promedio (SMA) de una acción fue $80 con una desviación estándar de $5.
+
+**a)** Calcule las bandas de Bollinger superior e inferior (usando 2 desviaciones estándar).
+
+**b)** Hoy el precio cerró en $91. ¿Qué indica esta situación según el análisis de Bandas de Bollinger?
+
+**c)** Un estudiante concluye: "El precio está en $91, arriba de la banda superior ($90), por lo tanto debo vender porque está garantizado que bajará". Identifique los errores en este razonamiento y explique qué análisis adicional debería realizar antes de tomar esta decisión. Mencione al menos el concepto de "Bollinger Squeeze".
+
+---
+
+## **EJERCICIO 8: Análisis de Código R (10 puntos)**
+
+Considere el siguiente fragmento de código R del documento:
+
+```r
+sma_20 <- SMA(precios, n = 20)
+ema_20 <- EMA(precios, n = 20)
+```
+
+**a)** Explique qué diferencia fundamental existe en cómo cada función procesa la serie temporal de precios.
+
+**b)** Si un analista necesita detectar cambios de tendencia lo más rápido posible para trading de alta frecuencia, ¿qué indicador recomendaría (SMA o EMA) y por qué?
+
+**c)** Proponga una modificación al código que calcule ambos indicadores con períodos de 10, 20 y 50 días, y explique qué insight adicional proporcionaría comparar estas tres ventanas temporales.
+
+---
+
+## **EJERCICIO 9: Diseño de Estrategia de Trading (Integración) (10 puntos)**
+
+Diseñe una estrategia de trading para un activo volátil que integre **al menos 3 indicadores** vistos en clase (puede incluir: SMA/EMA, RSI, Estocástico, MACD, Bandas de Bollinger).
+
+Su estrategia debe especificar:
+
+**a)** **Condiciones de ENTRADA** (compra): Defina los valores/cruces específicos de los 3 indicadores que deben cumplirse simultáneamente.
+
+**b)** **Condiciones de SALIDA** (venta): Establezca las señales de salida.
+
+**c)** **Gestión de riesgo**: Explique cómo usaría los indicadores para establecer niveles de stop-loss.
+
+**d)** **Limitaciones**: Identifique al menos 2 escenarios de mercado donde su estrategia podría generar pérdidas y cómo las mitigaría.
+
+---
+
+## **EJERCICIO 10: Análisis Crítico - Limitaciones de los Indicadores (10 puntos)**
+
+El documento menciona diversas limitaciones de los indicadores técnicos.
+
+**Desarrolle un ensayo breve (máximo 300 palabras)** que aborde:
+
+**a)** ¿Por qué los indicadores técnicos son herramientas "retardadas" (lagging indicators)? Explique con un ejemplo concreto.
+
+**b)** En mercados con "saltos de precio" (gaps) causados por noticias inesperadas (ej: aprobación de un medicamento, cambio regulatorio), ¿por qué fallan los indicadores técnicos tradicionales?
+
+**c)** Proponga dos estrategias complementarias que un analista de riesgo podría implementar para compensar estas limitaciones (no puede ser simplemente "usar análisis fundamental").
+
+---
+
+## **CRITERIOS DE CALIFICACIÓN GENERAL**
+
+| Aspecto | Puntaje |
+|---------|---------|
+| Precisión en cálculos matemáticos | 30% |
+| Justificación teórica sólida | 30% |
+| Capacidad de análisis crítico | 25% |
+| Claridad y organización | 15% |
+| **TOTAL** | **100%** |
+
+---
+
+## **CONSIDERACIONES IMPORTANTES**
+
+✅ **Todas las respuestas deben incluir justificación teórica**, no solo cálculos numéricos.
+
+✅ **Los ejercicios de análisis crítico** (3c, 5, 7c, 10) requieren **razonamiento propio** y evaluación de escenarios complejos.
+
+✅ **Cite las fórmulas** utilizadas antes de realizar los cálculos.
+
+✅ **En ejercicios de interpretación**, conecte los resultados con decisiones de inversión reales.
+
+---
+
+## **NOTA SOBRE EL USO DE HERRAMIENTAS DE IA**
+
+Esta actividad está diseñada para evaluar su **comprensión profunda** y **capacidad de aplicación práctica**. Si bien pueden usar herramientas de IA para:
+- Verificar cálculos matemáticos
+- Consultar definiciones básicas
+- Revisar sintaxis de código
+
+**NO deben usarlas para:**
+- Generar respuestas completas de análisis crítico
+- Justificaciones automáticas sin comprensión personal
+- Ensayos o argumentaciones que requieren criterio profesional
+
+**El profesor evaluará la coherencia conceptual y la capacidad de defender oralmente sus respuestas si es necesario.**
+
+---
+
+
+**Profesor: Javier Mauricio Sierra**  
+**Curso: Teoría del Riesgo**
