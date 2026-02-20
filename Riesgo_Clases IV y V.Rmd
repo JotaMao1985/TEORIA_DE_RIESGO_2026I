@@ -12,13 +12,26 @@ output:
 indent: true
 ---
 
+```{r}
+# Crear un nuevo virtualenv
+#python3.11 -m venv ~/.virtualenvs/r-reticulate-stable
+# Forzar el uso del nuevo entorno Python estable
+#reticulate::use_python("~/.virtualenvs/r-reticulate-stable/bin/python", required = TRUE)
+
+# Verificar
+#reticulate::py_config()
+
+# Instalar arch y dependencias
+# reticulate::py_install(c("numpy", "pandas","matplotlib", "arch", "plotly"))
+# reticulate::py_install(c("seaborn"))
+```
+
 
 
 ```{r setup, include=FALSE}
 library(reticulate)
-virtualenv_create(envname = "r-reticulate")
-use_virtualenv("r-reticulate", required = TRUE)
-#use_python("/Applications/anaconda3/bin/python3", required = TRUE)
+reticulate::use_python("~/.virtualenvs/r-reticulate-stable/bin/python", required = TRUE)
+reticulate::py_install(c("numpy", "pandas", "arch"))
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE)
 
@@ -290,39 +303,51 @@ DT::datatable(stock_data,rownames = FALSE)
 
 
 ```{python pressure_3_1, echo= FALSE, eval=TRUE}
+
+# Descargar datos
 symbol = "EC"  
 end_date = datetime.now()
 start_date = end_date - timedelta(days=730)  
 
 data = yf.download(symbol, start=start_date, end=end_date, progress=False)
-data['Fecha'] = data.index
-data.reset_index(inplace=True)
-data = data[['Fecha'] + [col for col in data.columns if col != 'Fecha']]
 
+# Arreglar columnas de yfinance
+if isinstance(data.columns, pd.MultiIndex):
+    data.columns = data.columns.get_level_values(0)
 
-data['Rendimientos'] = (data['Close']-data['Open'])/data['Open'] 
-# Con la formula de arriba se reduce la cantidad de valores no disponibles, la formula de 
-# abajo calcula los rendimientos de forma logaritmica
-#data['Rendimientos'] = data['Último'].pct_change(fill_method ='bfill')
+# Resetear índice y preparar Fecha
+data = data.reset_index()
+if 'Date' in data.columns:
+    data = data.rename(columns={'Date': 'Fecha'})
 
-desc_stats = data['Rendimientos'].describe()
+# Calcular rendimientos (manejo seguro de columnas)
+if 'Close' in data.columns and 'Open' in data.columns:
+    data['Rendimientos'] = (data['Close'] - data['Open']) / data['Open']
+else:
+    raise KeyError(f"Columnas disponibles: {data.columns.tolist()}")
 
+# Estadísticas descriptivas (sin NaN)
+rendimientos_clean = data['Rendimientos'].dropna()
+desc_stats = rendimientos_clean.describe()
 
-jb_test = jarque_bera(data['Rendimientos'])
+# Pruebas estadísticas
+jb_test = jarque_bera(rendimientos_clean)
+ks_test = kstest(rendimientos_clean, 'norm', 
+                 args=(rendimientos_clean.mean(), rendimientos_clean.std()))
 
-mean = data['Rendimientos'].mean()
-std = data['Rendimientos'].std()
-ks_test = kstest(data['Rendimientos'], 'norm', args=(mean, std))
-
+# Tabla con plotly
 df_d_r = pd.DataFrame(desc_stats).reset_index().rename(columns={'index': 'Descriptivo'})
-
 fig = ff.create_table(df_d_r.round(4))
 fig.show()
 
-print('Jarque-Bera test\n')
-jb_test 
-print('Kolmogorov-Smirnov\n')
-ks_test
+# Resultados
+print('Jarque-Bera test:')
+print(f'  Estadístico: {jb_test[0]:.4f}')
+print(f'  p-valor: {jb_test[1]:.4f}\n')
+
+print('Kolmogorov-Smirnov:')
+print(f'  Estadístico: {ks_test[0]:.4f}')
+print(f'  p-valor: {ks_test[1]:.4f}')
 ```
 
 
@@ -698,6 +723,9 @@ En la práctica, aunque los modelos ARCH proporcionan un marco poderoso para mod
 >***
 
 #### Implementación
+
+
+
 
 ```{python pressure_10, echo= TRUE, eval=TRUE}
 
