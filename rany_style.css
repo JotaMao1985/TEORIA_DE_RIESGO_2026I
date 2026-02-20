@@ -1,0 +1,63 @@
+/* Base styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8f9fa;
+    color: #212529;
+    line-height: 1.6;
+    margin: 0;
+    padding: 1rem;
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Headers */
+h1, h2, h3, h4 {
+    color: #2c3e50;
+    margin-bottom: 1em;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+h1 { font-size: 2.5rem; border-left: 4px solid #3498db; }
+h2 { font-size: 2rem; border-left: 4px solid #e74c3c; }
+h3, h4 { font-size: 1.5rem; border-left: 4px solid #f1c40f; }
+
+/* TOC Styles */
+#TOC {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+    background: white;
+    border-right: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.tocify-header { margin: 0; padding: 0; }
+
+.tocify-item a {
+    color: #495057;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: block;
+    border-left: 2px solid transparent;
+}
+
+.tocify-item a:hover {
+    background: #f8f9fa;
+    border-left: 2px solid #3498db;
+}
+
+/* Main content adjustment */
+.main-content {
+    margin-left: 320px;
+}
