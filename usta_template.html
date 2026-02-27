@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<!-- USTA Document Template v2.2 | Ver README_template.md para instrucciones de uso -->
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts: Montserrat and Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <meta name="author" content="$for(author-meta)$$author-meta$$endfor$" />
+    <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+
+    $for(header-includes)$
+    $header-includes$
+    $endfor$
+
+    <!-- MathJax 3 configuration -->
+    <script type="text/javascript">
+    /*<![CDATA[*/
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        tags: 'ams'
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        // processHtmlClass removed — scan entire document
+      },
+      chtml: {
+        scale: 1.05,
+        minScale: 0.5,
+        matchFontHeight: true,
+        mtextInheritFont: true
+      },
+      startup: {
+        ready: function() {
+          MathJax.startup.defaultReady();
+        }
+      }
+    };
+    /*]]>*/
+    </script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js">
+    </script>
+    <script>
+    // Ensure MathJax processes page after full load
+    window.addEventListener('load', function() {
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+            MathJax.typesetPromise().then(function() {
+                console.log('MathJax re-typeset on window load completed');
+            }).catch(function(err) {
+                console.warn('MathJax re-typeset error:', err);
+            });
+        } else if (typeof MathJax !== 'undefined' && MathJax.Hub) {
+            // MathJax 2 fallback
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+    });
+    </script>
+
+    <!-- USTA Utilities -->
+    <script>
+/**
+ * USTA Template - MathJax Configuration and Utilities
+ */
+
+// ─────────────────────────────────────────────────────────────
+// tagCodeBlocks()
+// Lee la clase de lenguaje que Pandoc pone en <code class="sourceCode r">
+// y la propaga al div.sourceCode padre como data-lang="R".
+// ─────────────────────────────────────────────────────────────
+const LANG_MAP = {
+    r: 'R', rscript: 'R',
+    python: 'Python', py: 'Python',
+    bash: 'Bash', sh: 'Shell',
+    sql: 'SQL', javascript: 'JS', js: 'JS',
+    css: 'CSS', html: 'HTML',
+    yaml: 'YAML', json: 'JSON',
+    cpp: 'C++', c: 'C', julia: 'Julia'
+};
+
+function detectLangFromClasses(el) {
+    for (const cls of el.classList) {
+        const key = cls.toLowerCase().replace('language-', '');
+        if (LANG_MAP[key]) return { key, label: LANG_MAP[key] };
+    }
+    return null;
+}
+
+function detectLangFromSource(src) {
+    if (/<-\s|library\s*\(|ggplot|data\.frame|tibble|dplyr|%>%|\|>/.test(src))
+        return { key: 'r', label: 'R' };
+    if (/\bimport\s+\w|\bdef\s+\w|print\s*\(|pandas|numpy|plt\./.test(src))
+        return { key: 'python', label: 'Python' };
+    return null;
+}
+
+function pandocHasSpans(codeEl) {
+    return codeEl.querySelector('span[class]') !== null;
+}
+
+function tagCodeBlocks() {
+    document.querySelectorAll('div.sourceCode').forEach(function (block) {
+        const codeEl = block.querySelector('code');
+        const preEl = block.querySelector('pre');
+        if (!codeEl) return;
+
+        let detected = detectLangFromClasses(codeEl)
+            || (preEl && detectLangFromClasses(preEl));
+
+        if (!detected) {
+            detected = detectLangFromSource(codeEl.textContent || '');
+        }
+
+        if (detected) {
+            block.setAttribute('data-lang', detected.label);
+            if (!block.classList.contains(detected.key))
+                block.classList.add(detected.key);
+        }
+
+        if (!pandocHasSpans(codeEl) && typeof hljs !== 'undefined') {
+            const langKey = detected ? detected.key : null;
+            const rawCode = codeEl.textContent;
+            let result;
+            try {
+                result = langKey
+                    ? hljs.highlight(rawCode, { language: langKey, ignoreIllegals: true })
+                    : hljs.highlightAuto(rawCode);
+                codeEl.innerHTML = result.value;
+                codeEl.classList.add('hljs');
+            } catch (e) {
+                try {
+                    result = hljs.highlightAuto(rawCode);
+                    codeEl.innerHTML = result.value;
+                    codeEl.classList.add('hljs');
+                } catch (e2) { /* dejar como está */ }
+            }
+        }
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+// fixRawMath()
+// Convierte delimitadores LaTeX crudos en elementos MathJax
+// ─────────────────────────────────────────────────────────────
+function fixRawMath() {
+    if (typeof MathJax === 'undefined') return;
+
+    const container = document.querySelector('.main-container') || document.body;
+    let changed = false;
+
+    const walker = document.createTreeWalker(
+        container,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode(node) {
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                const tag = parent.tagName;
+                if (['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA'].includes(tag))
+                    return NodeFilter.FILTER_REJECT;
+                if (parent.classList.contains('MathJax') ||
+                    parent.classList.contains('math') ||
+                    parent.tagName === 'MJX-CONTAINER')
+                    return NodeFilter.FILTER_REJECT;
+                if (/\\\(|\\\[/.test(node.textContent))
+                    return NodeFilter.FILTER_ACCEPT;
+                return NodeFilter.FILTER_SKIP;
+            }
+        }
+    );
+
+    const nodesToWrap = [];
+    let node;
+    while ((node = walker.nextNode())) nodesToWrap.push(node);
+
+    nodesToWrap.forEach(function (textNode) {
+        const text = textNode.textContent;
+        let wrapped = text;
+
+        // Display math: \[ ... \] -> wrap preserving delimiters for MathJax
+        wrapped = wrapped.replace(/\\\[([\s\S]*?)\\\]/g,
+            function (match) {
+                return '<span class="math display">' + match + '</span>';
+            });
+
+        // Inline math: \( ... \) -> wrap preserving delimiters for MathJax
+        wrapped = wrapped.replace(/\\\(([\s\S]*?)\\\)/g,
+            function (match) {
+                return '<span class="math inline">' + match + '</span>';
+            });
+
+        if (wrapped !== text) {
+            const span = document.createElement('span');
+            span.innerHTML = wrapped;
+            textNode.parentNode.replaceChild(span, textNode);
+            changed = true;
+        }
+    });
+
+    if (MathJax.typesetPromise) {
+        MathJax.typesetPromise([container])
+            .then(() => {
+                console.log('MathJax typeset completed successfully');
+            })
+            .catch((err) => {
+                console.warn('MathJax typeset error:', err);
+            });
+    }
+}
+
+// Toggle TOC function
+function toggleTOC() {
+    document.body.classList.toggle('toc-collapsed');
+    const icon = document.querySelector('#tocToggle i');
+    if (document.body.classList.contains('toc-collapsed')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-arrow-right');
+    } else {
+        icon.classList.remove('fa-arrow-right');
+        icon.classList.add('fa-bars');
+    }
+    localStorage.setItem('toc-collapsed', document.body.classList.contains('toc-collapsed'));
+}
+
+// Add lesson headers to sections
+function addLessonHeaders() {
+    const mainContent = document.querySelector('.main-content, .main-container, body');
+    const sections = mainContent.querySelectorAll('h1, h2:not(.toc-title)');
+
+    const mainSections = [];
+    sections.forEach(header => {
+        if (header.closest('#TOC') || header.closest('.usta-header-banner')) return;
+        mainSections.push(header);
+    });
+
+    const totalSections = mainSections.length;
+
+    const icons = [
+        'fa-book-open', 'fa-chart-line', 'fa-calculator', 'fa-database',
+        'fa-brain', 'fa-lightbulb', 'fa-graduation-cap', 'fa-file-alt',
+        'fa-cogs', 'fa-chart-bar', 'fa-microscope', 'fa-rocket'
+    ];
+
+    mainSections.forEach((header, index) => {
+        if (header.parentElement.querySelector('.lesson-header')) return;
+
+        const iconIndex = index % icons.length;
+        const icon = icons[iconIndex];
+
+        const lessonHeader = document.createElement('div');
+        lessonHeader.className = 'lesson-header';
+        lessonHeader.innerHTML = '<span class="lesson-badge">' +
+            '<i class="fas ' + icon + '"></i>' +
+            '<span>Lección ' + (index + 1) + ' de ' + totalSections + '</span>' +
+            '</span>';
+
+        header.parentNode.insertBefore(lessonHeader, header);
+    });
+}
+
+// Restore TOC state from localStorage
+document.addEventListener('DOMContentLoaded', function () {
+    const isMobile = window.innerWidth < 768;
+    const savedState = localStorage.getItem('toc-collapsed');
+
+    const shouldCollapse = isMobile
+        ? savedState !== 'false'
+        : savedState === 'true';
+
+    if (shouldCollapse) {
+        document.body.classList.add('toc-collapsed');
+        const icon = document.querySelector('#tocToggle i');
+        if (icon) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-arrow-right');
+        }
+    } else {
+        if (!isMobile) {
+            const icon = document.querySelector('#tocToggle i');
+            if (icon) {
+                icon.classList.remove('fa-arrow-right');
+                icon.classList.add('fa-bars');
+            }
+        }
+    }
+
+    tagCodeBlocks();
+    addLessonHeaders();
+    fixRawMath();
+
+    const tocLinks = document.querySelectorAll('#TOC a');
+    const sections = document.querySelectorAll('.section, h1, h2, h3, h4');
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id || entry.target.querySelector('[id]')?.id;
+                if (id) {
+                    tocLinks.forEach(link => {
+                        link.parentElement.classList.remove('active');
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.parentElement.classList.add('active');
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    tocLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+                if (window.innerWidth < 768) {
+                    document.body.classList.add('toc-collapsed');
+                    const icon = document.querySelector('#tocToggle i');
+                    if (icon) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-arrow-right');
+                    }
+                }
+            }
+        });
+    });
+
+    document.getElementById('tocOverlay')?.addEventListener('click', function () {
+        document.body.classList.add('toc-collapsed');
+        const icon = document.querySelector('#tocToggle i');
+        if (icon) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-arrow-right');
+        }
+    });
+});
+
+    </script>
+
+    <!-- Highlight.js — atom-one-dark, con soporte explícito para R -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    $for(css)$
+    <link rel="stylesheet" href="$css$" $if(html5)$$else$type="text/css" $endif$ />
+    $endfor$
+
+    <style>
+        /* USTA Brand Colors */
+        :root {
+            --usta-primary: #3D008D;
+            --usta-secondary: #ED1E79;
+            --usta-navy: #001A4D;
+            --usta-navy-light: #002868;
+            --usta-gold: #FDB913;
+            --usta-bg: #F8FAFC;
+            --usta-surface: #FFFFFF;
+        }
+
+        /* Base styles */
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #F8FAFC 0%, #E8ECF1 100%);
+            color: #1E293B;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* USTA Header Banner */
+        .usta-header-banner {
+            background: linear-gradient(180deg, #001A4D 0%, #002868 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 26, 77, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .usta-header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(61, 0, 141, 0.2) 100%);
+            pointer-events: none;
+        }
+
+        .usta-header-banner h1 {
+            color: white !important;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .usta-header-banner .author {
+            color: var(--usta-gold);
+            margin-top: 0.5rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .usta-header-banner .author i {
+            margin-right: 0.5rem;
+        }
+
+        .usta-header-banner .doc-date {
+            color: rgba(255, 255, 255, 0.65);
+            margin-top: 0.35rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .usta-header-banner .doc-date i {
+            margin-right: 0.4rem;
+        }
+
+        /* Main container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--usta-surface);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Headers */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Montserrat', sans-serif;
+            color: #2c3e50;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(61, 0, 141, 0.05) 0%, rgba(237, 30, 121, 0.05) 100%);
+            border-left: 4px solid var(--usta-primary);
+            transition: all 0.3s ease;
+        }
+
+        h1:hover,
+        h2:hover,
+        h3:hover {
+            box-shadow: 0 4px 15px rgba(61, 0, 141, 0.15);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-left: 5px solid var(--usta-primary);
+            background: linear-gradient(135deg, rgba(61, 0, 141, 0.1) 0%, rgba(61, 0, 141, 0.05) 100%);
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-left: 4px solid var(--usta-secondary);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            border-left: 4px solid var(--usta-gold);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            border-left: 3px solid var(--usta-navy);
+        }
+
+        /* TOC - Modern Sidebar like reference */
+        #TOC {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            background: linear-gradient(180deg, var(--usta-navy) 0%, var(--usta-navy-light) 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+
+        #TOC::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #TOC::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #TOC::-webkit-scrollbar-thumb {
+            background: rgba(237, 30, 121, 0.5);
+            border-radius: 3px;
+        }
+
+        #TOC::-webkit-scrollbar-thumb:hover {
+            background: rgba(237, 30, 121, 0.8);
+        }
+
+        /* TOC Header */
+        #TOC .toc-header {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #TOC .toc-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #TOC .toc-title i {
+            color: var(--usta-secondary);
+        }
+
+        #TOC .toc-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* TOC Navigation */
+        #TOC nav {
+            padding: 1rem 0.75rem;
+        }
+
+        #TOC ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #TOC>ul {
+            margin-top: 0;
+        }
+
+        #TOC li {
+            margin: 0.25rem 0;
+        }
+
+        #TOC a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        #TOC a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, var(--usta-primary), var(--usta-secondary));
+            border-radius: 0 2px 2px 0;
+            transition: height 0.3s ease;
+        }
+
+        #TOC a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding-left: 1.25rem;
+        }
+
+        #TOC a:hover::before {
+            height: 20px;
+        }
+
+        #TOC li.active>a,
+        #TOC a.active {
+            background: linear-gradient(140deg, var(--usta-primary) 0%, var(--usta-secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(237, 30, 121, 0.3);
+            padding-left: 1.25rem;
+        }
+
+        #TOC li.active>a::before,
+        #TOC a.active::before {
+            height: 100%;
+        }
+
+        /* Nested TOC items */
+        #TOC ul ul a {
+            padding-left: 2.5rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        #TOC ul ul a::before {
+            left: 1.5rem;
+        }
+
+        #TOC ul ul ul a {
+            padding-left: 3.5rem;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        #TOC ul ul ul a::before {
+            left: 2.5rem;
+        }
+
+        /* Toggle Button */
+        .toc-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 295px;
+            z-index: 1001;
+            background: linear-gradient(140deg, var(--usta-primary) 0%, var(--usta-secondary) 100%);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(61, 0, 141, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .toc-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(61, 0, 141, 0.5);
+        }
+
+        .toc-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .toc-toggle i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Sidebar collapsed state */
+        body.toc-collapsed #TOC {
+            transform: translateX(-100%);
+        }
+
+        body.toc-collapsed .toc-toggle {
+            left: 1rem;
+        }
+
+        body.toc-collapsed .toc-toggle i {
+            transform: rotate(0deg);
+        }
+
+        body.toc-collapsed .main-content {
+            margin-left: 2rem;
+        }
+
+        /* Overlay for mobile only */
+        .toc-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .toc-overlay {
+                display: block;
+            }
+
+            body.toc-collapsed .toc-overlay {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            body:not(.toc-collapsed) .toc-overlay {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+
+        /* Main content adjustment */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        body.toc-collapsed .main-content {
+            margin-left: 0;
+        }
+
+        /* Lesson Header Badge */
+        .lesson-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(140deg, rgba(61, 0, 141, 0.1) 0%, rgba(237, 30, 121, 0.1) 100%);
+            border: 1px solid rgba(61, 0, 141, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--usta-primary);
+            box-shadow: 0 2px 8px rgba(61, 0, 141, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .lesson-badge:hover {
+            background: linear-gradient(140deg, rgba(61, 0, 141, 0.15) 0%, rgba(237, 30, 121, 0.15) 100%);
+            box-shadow: 0 4px 12px rgba(61, 0, 141, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .lesson-badge i {
+            color: var(--usta-secondary);
+            font-size: 0.9rem;
+        }
+
+        .lesson-badge span {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* ════════════════════════════════════════════
+           BLOQUES DE CÓDIGO — Fuente y reset base
+           ════════════════════════════════════════════ */
+        pre, code {
+            font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+        }
+
+        /* Pandoc genera: div.sourceCode > pre.sourceCode > code.sourceCode
+           knitr con highlight default produce tokens <span class="kw"> etc.  */
+        div.sourceCode {
+            position: relative;
+            margin: 1.75rem 0 0 0;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            background: #282c34;   /* Atom One Dark */
+        }
+
+        /* Chip de lenguaje — se coloca por JS vía data-lang */
+        div.sourceCode[data-lang]::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 0; right: 0;
+            padding: 0.18rem 0.8rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom-left-radius: 8px;
+            z-index: 3;
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.10);
+            pointer-events: none;
+        }
+
+        div.sourceCode pre {
+            margin: 0;
+            padding: 1.25rem 1.5rem 1.25rem 1.5rem;
+            background: transparent;
+            color: #abb2bf;
+            overflow-x: auto;
+            font-size: 0.89rem;
+            line-height: 1.7;
+        }
+
+        div.sourceCode code {
+            background: transparent !important;
+            padding: 0;
+            color: inherit;
+            white-space: pre;
+            font-size: inherit;
+        }
+
+        /* Borde de color por lenguaje */
+        div.sourceCode[data-lang="R"]      { border-top: 3px solid #4492f3; }
+        div.sourceCode[data-lang="Python"] { border-top: 3px solid #f7c948; }
+        div.sourceCode[data-lang="Bash"],
+        div.sourceCode[data-lang="Shell"]  { border-top: 3px solid #50fa7b; }
+        div.sourceCode[data-lang="SQL"]    { border-top: 3px solid #8be9fd; }
+        div.sourceCode[data-lang="JS"]     { border-top: 3px solid #ffb86c; }
+
+        /* ════════════════════════════════════════════
+           TOKENS DE PANDOC — Atom One Dark
+           Pandoc emite estas clases cuando highlight != null
+           ════════════════════════════════════════════ */
+        /* Palabras clave: if, else, for, while, function, library, import… */
+        code span.kw  { color: #c678dd; font-weight: 600; }
+        /* Tipos de dato */
+        code span.dt  { color: #e5c07b; }
+        /* Strings / cadenas de texto */
+        code span.st  { color: #98c379; }
+        /* Caracteres especiales dentro de strings */
+        code span.sc  { color: #56b6c2; }
+        /* Números enteros, flotantes, binarios, hex */
+        code span.dv, code span.fl,
+        code span.bn, code span.ix  { color: #d19a66; }
+        /* Operadores: +, -, <-, |>, %>%, ::, !, ==… */
+        code span.op  { color: #56b6c2; }
+        /* Comentarios */
+        code span.co  { color: #5c6370; font-style: italic; }
+        /* Nombre de función en llamada */
+        code span.fu  { color: #61afef; }
+        /* Variables / identificadores ordinarios */
+        code span.va  { color: #e06c75; }
+        /* Constantes: TRUE FALSE NULL NA Inf NaN None True False */
+        code span.cn  { color: #d19a66; font-weight: 600; }
+        /* Preprocesador / directivas */
+        code span.pp  { color: #e5c07b; }
+        /* Alertas y errores */
+        code span.al  { color: #ff5555; font-weight: 600; }
+        /* Advertencias */
+        code span.wa  { color: #ffb86c; font-style: italic; }
+        /* Anotaciones */
+        code span.an  { color: #6272a4; font-style: italic; }
+        /* Otro texto */
+        code span.ot  { color: #abb2bf; }
+        /* Información */
+        code span.in  { color: #6272a4; font-style: italic; }
+        /* Verbatim / texto sin procesar */
+        code span.vs  { color: #98c379; }
+        /* Importaciones especiales */
+        code span.im  { color: #c678dd; }
+        /* Atributos */
+        code span.at  { color: #e5c07b; }
+        /* Extensiones del lenguaje */
+        code span.ex  { color: #61afef; }
+        /* Documentación */
+        code span.do  { color: #5c6370; font-style: italic; }
+
+        /* ════════════════════════════════════════════
+           TOKENS DE HIGHLIGHT.JS — Atom One Dark
+           hljs emite estas clases cuando se re-aplica por JS
+           ════════════════════════════════════════════ */
+        .hljs-keyword, .hljs-selector-tag,
+        .hljs-built_in, .hljs-name,
+        .hljs-tag                         { color: #c678dd; font-weight: 600; }
+        .hljs-string, .hljs-doctag        { color: #98c379; }
+        .hljs-title, .hljs-section,
+        .hljs-selector-id                 { color: #61afef; }
+        .hljs-variable, .hljs-template-variable { color: #e06c75; }
+        .hljs-number, .hljs-literal       { color: #d19a66; }
+        .hljs-comment, .hljs-quote        { color: #5c6370; font-style: italic; }
+        .hljs-symbol, .hljs-bullet,
+        .hljs-link, .hljs-meta,
+        .hljs-selector-attr,
+        .hljs-selector-pseudo             { color: #56b6c2; }
+        .hljs-attr, .hljs-type            { color: #e5c07b; }
+        .hljs-addition                    { color: #98c379; }
+        .hljs-deletion                    { color: #ff5555; }
+        .hljs-emphasis                    { font-style: italic; }
+        .hljs-strong                      { font-weight: 700; }
+
+        /* ════════════════════════════════════════════
+           BLOQUES DE OUTPUT — salida de consola/knitr
+           Pandoc pone el output en <pre> suelto (sin clase)
+           justo después del div.sourceCode
+           ════════════════════════════════════════════ */
+        div.sourceCode + pre {
+            margin: 0 0 1.75rem 0;
+            padding: 0.9rem 1.5rem;
+            background: #1e2127;
+            color: #9da5b4;
+            border-radius: 0 0 12px 12px;
+            border-left: 3px solid #4a4f5a;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.83rem;
+            overflow-x: auto;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+        }
+
+        /* Output genérico (sin código previo) */
+        pre:not([class]):not(:is(div.sourceCode pre)) {
+            background: #1e2127;
+            color: #9da5b4;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 3px solid #4a4f5a;
+            font-size: 0.84rem;
+            overflow-x: auto;
+        }
+
+        /* ════════════════════════════════════════════
+           CÓDIGO INLINE
+           ════════════════════════════════════════════ */
+        :not(pre) > code {
+            background: rgba(61,0,141,0.09);
+            color: var(--usta-primary);
+            border: 1px solid rgba(61,0,141,0.18);
+            padding: 0.12rem 0.45rem;
+            border-radius: 5px;
+            font-size: 0.87em;
+        }
+
+        /* Scrollbar delgada dentro de bloques de código */
+        div.sourceCode pre::-webkit-scrollbar { height: 5px; }
+        div.sourceCode pre::-webkit-scrollbar-track { background: transparent; }
+        div.sourceCode pre::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.14);
+            border-radius: 3px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--usta-primary) 0%, var(--usta-secondary) 100%);
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, rgba(61, 0, 141, 0.05) 0%, rgba(237, 30, 121, 0.05) 100%);
+        }
+
+        /* Blockquotes */
+        blockquote {
+            background: linear-gradient(135deg, rgba(61, 0, 141, 0.08) 0%, rgba(237, 30, 121, 0.08) 100%);
+            border-left: 4px solid var(--usta-primary);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #4A5568;
+            box-shadow: 0 2px 10px rgba(61, 0, 141, 0.1);
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        /* Images and Figures */
+        img,
+        figure {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            margin: 2rem auto;
+            display: block;
+        }
+
+        figcaption {
+            text-align: center;
+            color: #64748B;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Lists */
+        ul,
+        ol {
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--usta-primary), var(--usta-secondary));
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #4A00A8, #FF2D8A);
+        }
+
+        /* Links */
+        a {
+            color: var(--usta-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--usta-secondary);
+            text-decoration: underline;
+        }
+
+        /* =============================================
+           MATEMÁTICAS — MathJax 3
+           ============================================= */
+        
+        /* Contenedores de ecuaciones generados por Pandoc */
+        span.math.display,
+        p.math.display,
+        div.math.display,
+        .math.display {
+            display: block !important;
+            text-align: center !important;
+        }
+
+        /* Display math: ecuaciones centradas en bloque */
+        mjx-container[jax="CHTML"][display="true"] {
+            display: block;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 1rem 1.5rem;
+            margin: 2rem auto !important;
+            background: linear-gradient(135deg, rgba(61, 0, 141, 0.04) 0%, rgba(237, 30, 121, 0.04) 100%);
+            border-radius: 10px;
+            border-left: 4px solid var(--usta-primary);
+            border-right: 1px solid rgba(61,0,141,0.1);
+            scrollbar-width: thin;
+            text-align: center;
+        }
+
+        /* Inline math: dentro del flujo de texto */
+        mjx-container[jax="CHTML"]:not([display="true"]) {
+            margin: 0 0.15em;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        /* Asegurar que el texto con matemáticas inline fluya correctamente */
+        p:has(mjx-container:not([display="true"])) {
+            line-height: 2.2;
+        }
+
+        /* MathJax base size */
+        mjx-container {
+            font-size: 1.05em !important;
+        }
+
+        /* Scrollbar en ecuaciones largas */
+        mjx-container[jax="CHTML"][display="true"]::-webkit-scrollbar {
+            height: 4px;
+        }
+        mjx-container[jax="CHTML"][display="true"]::-webkit-scrollbar-thumb {
+            background: rgba(61, 0, 141, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Math en encabezados */
+        h1 mjx-container,
+        h2 mjx-container,
+        h3 mjx-container,
+        h4 mjx-container {
+            font-size: 0.92em !important;
+        }
+
+        /* Math en blockquotes */
+        blockquote mjx-container[jax="CHTML"][display="true"],
+        blockquote .math.display {
+            background: rgba(255, 255, 255, 0.6);
+            border-left-color: var(--usta-gold);
+        }
+
+        /* Pantallas pequeñas */
+        @media (max-width: 768px) {
+            mjx-container[jax="CHTML"][display="true"],
+            .math.display {
+                font-size: 0.92em;
+                padding: 0.6rem 0.75rem;
+            }
+        }
+
+        /* Section styling */
+        .section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+
+
+        /* Animation for page load */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-container {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            #TOC {
+                width: 260px;
+            }
+
+            .main-content {
+                margin-left: 260px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #TOC {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            body:not(.toc-collapsed) #TOC {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .main-container {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+
+            .usta-header-banner {
+                padding: 1.5rem;
+            }
+
+            .usta-header-banner h1 {
+                font-size: 1.75rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            #TOC {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .usta-header-banner {
+                background: white;
+                color: black;
+                box-shadow: none;
+            }
+
+            .usta-header-banner h1 {
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay for mobile -->
+    <div class="toc-overlay" id="tocOverlay"></div>
+
+    <!-- Toggle Button -->
+    <button class="toc-toggle" id="tocToggle" onclick="toggleTOC()" title="Mostrar/Ocultar menú">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- USTA Header Banner -->
+    <div class="usta-header-banner">
+        <h1>$if(title)$$title$$endif$</h1>
+        $if(author)$
+        <div class="author">
+            <i class="fas fa-user-circle"></i> $for(author)$$author$$sep$, $endfor$
+        </div>
+        $endif$
+        $if(date)$
+        <div class="doc-date">
+            <i class="fas fa-calendar-alt"></i> $date$
+        </div>
+        $endif$
+    </div>
+
+    <!-- Table of Contents -->
+    $if(toc)$
+    <nav id="TOC">
+        <div class="toc-header">
+            <h2 class="toc-title"><i class="fas fa-book-open"></i> Contenido</h2>
+            <div class="toc-subtitle">Teoría del Riesgo • USTA</div>
+        </div>
+        $table-of-contents$
+    </nav>
+    $endif$
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="main-container">
+            $for(include-before)$
+            $include-before$
+            $endfor$
+
+            $body$
+
+            $for(include-after)$
+            $include-after$
+            $endfor$
+        </div>
+    </div>
+</body>
+
+</html>
