@@ -29,343 +29,478 @@
 
     <!-- MathJax 3 configuration -->
     <script type="text/javascript">
-    /*<![CDATA[*/
-    window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']],
-        processEscapes: true,
-        processEnvironments: true,
-        tags: 'ams'
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-        ignoreHtmlClass: 'tex2jax_ignore',
-        // processHtmlClass removed — scan entire document
-      },
-      chtml: {
-        scale: 1.05,
-        minScale: 0.5,
-        matchFontHeight: true,
-        mtextInheritFont: true
-      },
-      startup: {
-        ready: function() {
-          MathJax.startup.defaultReady();
-        }
-      }
-    };
-    /*]]>*/
+        /*<![CDATA[*/
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                tags: 'ams'
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                // processHtmlClass removed — scan entire document
+            },
+            chtml: {
+                scale: 1.05,
+                minScale: 0.5,
+                matchFontHeight: true,
+                mtextInheritFont: true
+            },
+            startup: {
+                ready: function () {
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+        /*]]>*/
     </script>
-    <script id="MathJax-script" async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js">
     </script>
     <script>
-    // Ensure MathJax processes page after full load
-    window.addEventListener('load', function() {
-        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-            MathJax.typesetPromise().then(function() {
-                console.log('MathJax re-typeset on window load completed');
-            }).catch(function(err) {
-                console.warn('MathJax re-typeset error:', err);
-            });
-        } else if (typeof MathJax !== 'undefined' && MathJax.Hub) {
-            // MathJax 2 fallback
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-        }
-    });
+        // Ensure MathJax processes page after full load
+        window.addEventListener('load', function () {
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise().then(function () {
+                    console.log('MathJax re-typeset on window load completed');
+                }).catch(function (err) {
+                    console.warn('MathJax re-typeset error:', err);
+                });
+            } else if (typeof MathJax !== 'undefined' && MathJax.Hub) {
+                // MathJax 2 fallback
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
+        });
     </script>
 
     <!-- USTA Utilities -->
     <script>
-/**
- * USTA Template - MathJax Configuration and Utilities
- */
+        /**
+         * USTA Template - MathJax Configuration and Utilities
+         */
 
-// ─────────────────────────────────────────────────────────────
-// tagCodeBlocks()
-// Lee la clase de lenguaje que Pandoc pone en <code class="sourceCode r">
-// y la propaga al div.sourceCode padre como data-lang="R".
-// ─────────────────────────────────────────────────────────────
-const LANG_MAP = {
-    r: 'R', rscript: 'R',
-    python: 'Python', py: 'Python',
-    bash: 'Bash', sh: 'Shell',
-    sql: 'SQL', javascript: 'JS', js: 'JS',
-    css: 'CSS', html: 'HTML',
-    yaml: 'YAML', json: 'JSON',
-    cpp: 'C++', c: 'C', julia: 'Julia'
-};
+        // ─────────────────────────────────────────────────────────────
+        // tagCodeBlocks()
+        // Lee la clase de lenguaje que Pandoc pone en <code class="sourceCode r">
+        // y la propaga al div.sourceCode padre como data-lang="R".
+        // ─────────────────────────────────────────────────────────────
+        const LANG_MAP = {
+            r: 'R', rscript: 'R',
+            python: 'Python', py: 'Python',
+            bash: 'Bash', sh: 'Shell',
+            sql: 'SQL', javascript: 'JS', js: 'JS',
+            css: 'CSS', html: 'HTML',
+            yaml: 'YAML', json: 'JSON',
+            cpp: 'C++', c: 'C', julia: 'Julia'
+        };
 
-function detectLangFromClasses(el) {
-    for (const cls of el.classList) {
-        const key = cls.toLowerCase().replace('language-', '');
-        if (LANG_MAP[key]) return { key, label: LANG_MAP[key] };
-    }
-    return null;
-}
-
-function detectLangFromSource(src) {
-    if (/<-\s|library\s*\(|ggplot|data\.frame|tibble|dplyr|%>%|\|>/.test(src))
-        return { key: 'r', label: 'R' };
-    if (/\bimport\s+\w|\bdef\s+\w|print\s*\(|pandas|numpy|plt\./.test(src))
-        return { key: 'python', label: 'Python' };
-    return null;
-}
-
-function pandocHasSpans(codeEl) {
-    return codeEl.querySelector('span[class]') !== null;
-}
-
-function tagCodeBlocks() {
-    document.querySelectorAll('div.sourceCode').forEach(function (block) {
-        const codeEl = block.querySelector('code');
-        const preEl = block.querySelector('pre');
-        if (!codeEl) return;
-
-        let detected = detectLangFromClasses(codeEl)
-            || (preEl && detectLangFromClasses(preEl));
-
-        if (!detected) {
-            detected = detectLangFromSource(codeEl.textContent || '');
+        function detectLangFromClasses(el) {
+            for (const cls of el.classList) {
+                const key = cls.toLowerCase().replace('language-', '');
+                if (LANG_MAP[key]) return { key, label: LANG_MAP[key] };
+            }
+            return null;
         }
 
-        if (detected) {
-            block.setAttribute('data-lang', detected.label);
-            if (!block.classList.contains(detected.key))
-                block.classList.add(detected.key);
+        function detectLangFromSource(src) {
+            if (/<-\s|library\s*\(|ggplot|data\.frame|tibble|dplyr|%>%|\|>/.test(src))
+                return { key: 'r', label: 'R' };
+            if (/\bimport\s+\w|\bdef\s+\w|print\s*\(|pandas|numpy|plt\./.test(src))
+                return { key: 'python', label: 'Python' };
+            return null;
         }
 
-        if (!pandocHasSpans(codeEl) && typeof hljs !== 'undefined') {
-            const langKey = detected ? detected.key : null;
-            const rawCode = codeEl.textContent;
-            let result;
-            try {
-                result = langKey
-                    ? hljs.highlight(rawCode, { language: langKey, ignoreIllegals: true })
-                    : hljs.highlightAuto(rawCode);
-                codeEl.innerHTML = result.value;
-                codeEl.classList.add('hljs');
-            } catch (e) {
-                try {
-                    result = hljs.highlightAuto(rawCode);
-                    codeEl.innerHTML = result.value;
-                    codeEl.classList.add('hljs');
-                } catch (e2) { /* dejar como está */ }
+        function pandocHasSpans(codeEl) {
+            return codeEl.querySelector('span[class]') !== null;
+        }
+
+        function tagCodeBlocks() {
+            document.querySelectorAll('div.sourceCode').forEach(function (block) {
+                const codeEl = block.querySelector('code');
+                const preEl = block.querySelector('pre');
+                if (!codeEl) return;
+
+                let detected = detectLangFromClasses(codeEl)
+                    || (preEl && detectLangFromClasses(preEl));
+
+                if (!detected) {
+                    detected = detectLangFromSource(codeEl.textContent || '');
+                }
+
+                if (detected) {
+                    block.setAttribute('data-lang', detected.label);
+                    if (!block.classList.contains(detected.key))
+                        block.classList.add(detected.key);
+                }
+
+                if (!pandocHasSpans(codeEl) && typeof hljs !== 'undefined') {
+                    const langKey = detected ? detected.key : null;
+                    const rawCode = codeEl.textContent;
+                    let result;
+                    try {
+                        result = langKey
+                            ? hljs.highlight(rawCode, { language: langKey, ignoreIllegals: true })
+                            : hljs.highlightAuto(rawCode);
+                        codeEl.innerHTML = result.value;
+                        codeEl.classList.add('hljs');
+                    } catch (e) {
+                        try {
+                            result = hljs.highlightAuto(rawCode);
+                            codeEl.innerHTML = result.value;
+                            codeEl.classList.add('hljs');
+                        } catch (e2) { /* dejar como está */ }
+                    }
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // fixRawMath()
+        // Convierte delimitadores LaTeX crudos en elementos MathJax
+        // ─────────────────────────────────────────────────────────────
+        function fixRawMath() {
+            if (typeof MathJax === 'undefined') return;
+
+            const container = document.querySelector('.main-container') || document.body;
+            let changed = false;
+
+            const walker = document.createTreeWalker(
+                container,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode(node) {
+                        const parent = node.parentElement;
+                        if (!parent) return NodeFilter.FILTER_REJECT;
+                        const tag = parent.tagName;
+                        if (['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA'].includes(tag))
+                            return NodeFilter.FILTER_REJECT;
+                        if (parent.classList.contains('MathJax') ||
+                            parent.classList.contains('math') ||
+                            parent.tagName === 'MJX-CONTAINER')
+                            return NodeFilter.FILTER_REJECT;
+                        if (/\\\(|\\\[/.test(node.textContent))
+                            return NodeFilter.FILTER_ACCEPT;
+                        return NodeFilter.FILTER_SKIP;
+                    }
+                }
+            );
+
+            const nodesToWrap = [];
+            let node;
+            while ((node = walker.nextNode())) nodesToWrap.push(node);
+
+            nodesToWrap.forEach(function (textNode) {
+                const text = textNode.textContent;
+                let wrapped = text;
+
+                // Display math: \[ ... \] -> wrap preserving delimiters for MathJax
+                wrapped = wrapped.replace(/\\\[([\s\S]*?)\\\]/g,
+                    function (match) {
+                        return '<span class="math display">' + match + '</span>';
+                    });
+
+                // Inline math: \( ... \) -> wrap preserving delimiters for MathJax
+                wrapped = wrapped.replace(/\\\(([\s\S]*?)\\\)/g,
+                    function (match) {
+                        return '<span class="math inline">' + match + '</span>';
+                    });
+
+                if (wrapped !== text) {
+                    const span = document.createElement('span');
+                    span.innerHTML = wrapped;
+                    textNode.parentNode.replaceChild(span, textNode);
+                    changed = true;
+                }
+            });
+
+            if (MathJax.typesetPromise) {
+                MathJax.typesetPromise([container])
+                    .then(() => {
+                        console.log('MathJax typeset completed successfully');
+                    })
+                    .catch((err) => {
+                        console.warn('MathJax typeset error:', err);
+                    });
             }
         }
-    });
-}
 
-// ─────────────────────────────────────────────────────────────
-// fixRawMath()
-// Convierte delimitadores LaTeX crudos en elementos MathJax
-// ─────────────────────────────────────────────────────────────
-function fixRawMath() {
-    if (typeof MathJax === 'undefined') return;
-
-    const container = document.querySelector('.main-container') || document.body;
-    let changed = false;
-
-    const walker = document.createTreeWalker(
-        container,
-        NodeFilter.SHOW_TEXT,
-        {
-            acceptNode(node) {
-                const parent = node.parentElement;
-                if (!parent) return NodeFilter.FILTER_REJECT;
-                const tag = parent.tagName;
-                if (['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA'].includes(tag))
-                    return NodeFilter.FILTER_REJECT;
-                if (parent.classList.contains('MathJax') ||
-                    parent.classList.contains('math') ||
-                    parent.tagName === 'MJX-CONTAINER')
-                    return NodeFilter.FILTER_REJECT;
-                if (/\\\(|\\\[/.test(node.textContent))
-                    return NodeFilter.FILTER_ACCEPT;
-                return NodeFilter.FILTER_SKIP;
-            }
-        }
-    );
-
-    const nodesToWrap = [];
-    let node;
-    while ((node = walker.nextNode())) nodesToWrap.push(node);
-
-    nodesToWrap.forEach(function (textNode) {
-        const text = textNode.textContent;
-        let wrapped = text;
-
-        // Display math: \[ ... \] -> wrap preserving delimiters for MathJax
-        wrapped = wrapped.replace(/\\\[([\s\S]*?)\\\]/g,
-            function (match) {
-                return '<span class="math display">' + match + '</span>';
-            });
-
-        // Inline math: \( ... \) -> wrap preserving delimiters for MathJax
-        wrapped = wrapped.replace(/\\\(([\s\S]*?)\\\)/g,
-            function (match) {
-                return '<span class="math inline">' + match + '</span>';
-            });
-
-        if (wrapped !== text) {
-            const span = document.createElement('span');
-            span.innerHTML = wrapped;
-            textNode.parentNode.replaceChild(span, textNode);
-            changed = true;
-        }
-    });
-
-    if (MathJax.typesetPromise) {
-        MathJax.typesetPromise([container])
-            .then(() => {
-                console.log('MathJax typeset completed successfully');
-            })
-            .catch((err) => {
-                console.warn('MathJax typeset error:', err);
-            });
-    }
-}
-
-// Toggle TOC function
-function toggleTOC() {
-    document.body.classList.toggle('toc-collapsed');
-    const icon = document.querySelector('#tocToggle i');
-    if (document.body.classList.contains('toc-collapsed')) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-arrow-right');
-    } else {
-        icon.classList.remove('fa-arrow-right');
-        icon.classList.add('fa-bars');
-    }
-    localStorage.setItem('toc-collapsed', document.body.classList.contains('toc-collapsed'));
-}
-
-// Add lesson headers to sections
-function addLessonHeaders() {
-    const mainContent = document.querySelector('.main-content, .main-container, body');
-    const sections = mainContent.querySelectorAll('h1, h2:not(.toc-title)');
-
-    const mainSections = [];
-    sections.forEach(header => {
-        if (header.closest('#TOC') || header.closest('.usta-header-banner')) return;
-        mainSections.push(header);
-    });
-
-    const totalSections = mainSections.length;
-
-    const icons = [
-        'fa-book-open', 'fa-chart-line', 'fa-calculator', 'fa-database',
-        'fa-brain', 'fa-lightbulb', 'fa-graduation-cap', 'fa-file-alt',
-        'fa-cogs', 'fa-chart-bar', 'fa-microscope', 'fa-rocket'
-    ];
-
-    mainSections.forEach((header, index) => {
-        if (header.parentElement.querySelector('.lesson-header')) return;
-
-        const iconIndex = index % icons.length;
-        const icon = icons[iconIndex];
-
-        const lessonHeader = document.createElement('div');
-        lessonHeader.className = 'lesson-header';
-        lessonHeader.innerHTML = '<span class="lesson-badge">' +
-            '<i class="fas ' + icon + '"></i>' +
-            '<span>Lección ' + (index + 1) + ' de ' + totalSections + '</span>' +
-            '</span>';
-
-        header.parentNode.insertBefore(lessonHeader, header);
-    });
-}
-
-// Restore TOC state from localStorage
-document.addEventListener('DOMContentLoaded', function () {
-    const isMobile = window.innerWidth < 768;
-    const savedState = localStorage.getItem('toc-collapsed');
-
-    const shouldCollapse = isMobile
-        ? savedState !== 'false'
-        : savedState === 'true';
-
-    if (shouldCollapse) {
-        document.body.classList.add('toc-collapsed');
-        const icon = document.querySelector('#tocToggle i');
-        if (icon) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-arrow-right');
-        }
-    } else {
-        if (!isMobile) {
+        // Toggle TOC function
+        function toggleTOC() {
+            document.body.classList.toggle('toc-collapsed');
             const icon = document.querySelector('#tocToggle i');
-            if (icon) {
+            if (document.body.classList.contains('toc-collapsed')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-arrow-right');
+            } else {
                 icon.classList.remove('fa-arrow-right');
                 icon.classList.add('fa-bars');
             }
+            localStorage.setItem('toc-collapsed', document.body.classList.contains('toc-collapsed'));
         }
-    }
 
-    tagCodeBlocks();
-    addLessonHeaders();
-    fixRawMath();
+        // Add lesson headers to sections
+        function addLessonHeaders() {
+            const mainContent = document.querySelector('.main-content, .main-container, body');
+            const sections = mainContent.querySelectorAll('h1, h2:not(.toc-title)');
 
-    const tocLinks = document.querySelectorAll('#TOC a');
-    const sections = document.querySelectorAll('.section, h1, h2, h3, h4');
+            const mainSections = [];
+            sections.forEach(header => {
+                if (header.closest('#TOC') || header.closest('.usta-header-banner')) return;
+                mainSections.push(header);
+            });
 
-    const observerOptions = {
-        root: null,
-        rootMargin: '-20% 0px -60% 0px',
-        threshold: 0
-    };
+            const totalSections = mainSections.length;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id || entry.target.querySelector('[id]')?.id;
-                if (id) {
-                    tocLinks.forEach(link => {
-                        link.parentElement.classList.remove('active');
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === '#' + id) {
-                            link.parentElement.classList.add('active');
-                            link.classList.add('active');
-                        }
-                    });
+            const icons = [
+                'fa-book-open', 'fa-chart-line', 'fa-calculator', 'fa-database',
+                'fa-brain', 'fa-lightbulb', 'fa-graduation-cap', 'fa-file-alt',
+                'fa-cogs', 'fa-chart-bar', 'fa-microscope', 'fa-rocket'
+            ];
+
+            mainSections.forEach((header, index) => {
+                if (header.parentElement.querySelector('.lesson-header')) return;
+
+                const iconIndex = index % icons.length;
+                const icon = icons[iconIndex];
+
+                const lessonHeader = document.createElement('div');
+                lessonHeader.className = 'lesson-header';
+                lessonHeader.innerHTML = '<span class="lesson-badge">' +
+                    '<i class="fas ' + icon + '"></i>' +
+                    '<span>Lección ' + (index + 1) + ' de ' + totalSections + '</span>' +
+                    '</span>';
+
+                header.parentNode.insertBefore(lessonHeader, header);
+            });
+        }
+
+        // Restore TOC state from localStorage
+        document.addEventListener('DOMContentLoaded', function () {
+            const isMobile = window.innerWidth < 768;
+            const savedState = localStorage.getItem('toc-collapsed');
+
+            const shouldCollapse = isMobile
+                ? savedState !== 'false'
+                : savedState === 'true';
+
+            if (shouldCollapse) {
+                document.body.classList.add('toc-collapsed');
+                const icon = document.querySelector('#tocToggle i');
+                if (icon) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-arrow-right');
                 }
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => {
-        observer.observe(section);
-    });
-
-    tocLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                targetElement.scrollIntoView({ behavior: 'smooth' });
-                if (window.innerWidth < 768) {
-                    document.body.classList.add('toc-collapsed');
+            } else {
+                if (!isMobile) {
                     const icon = document.querySelector('#tocToggle i');
                     if (icon) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-arrow-right');
+                        icon.classList.remove('fa-arrow-right');
+                        icon.classList.add('fa-bars');
                     }
                 }
             }
-        });
-    });
 
-    document.getElementById('tocOverlay')?.addEventListener('click', function () {
-        document.body.classList.add('toc-collapsed');
-        const icon = document.querySelector('#tocToggle i');
-        if (icon) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-arrow-right');
-        }
-    });
-});
+            tagCodeBlocks();
+            addLessonHeaders();
+            fixRawMath();
+
+            const tocLinks = document.querySelectorAll('#TOC a');
+            const sections = document.querySelectorAll('.section, h1, h2, h3, h4');
+
+            // SPA Navigation Logic
+            const spaSections = document.querySelectorAll(".section.level1");
+            const spaTocLinks = document.querySelectorAll("#TOC a");
+            const spaTocItems = document.querySelectorAll("#TOC ul li");
+
+            // Only initialize IntersectionObserver if NOT in SPA mode
+            if (spaSections.length === 0 || spaTocLinks.length === 0) {
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '-20% 0px -60% 0px',
+                    threshold: 0
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const id = entry.target.id || entry.target.querySelector('[id]')?.id;
+                            if (id) {
+                                tocLinks.forEach(link => {
+                                    link.parentElement.classList.remove('active');
+                                    link.classList.remove('active');
+                                    if (link.getAttribute('href') === '#' + id) {
+                                        link.parentElement.classList.add('active');
+                                        link.classList.add('active');
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }, observerOptions);
+
+                sections.forEach(section => {
+                    observer.observe(section);
+                });
+
+                // Default TOC click behavior (Smooth Scroll)
+                tocLinks.forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                            if (window.innerWidth < 768) {
+                                document.body.classList.add('toc-collapsed');
+                                const icon = document.querySelector('#tocToggle i');
+                                if (icon) {
+                                    icon.classList.remove('fa-bars');
+                                    icon.classList.add('fa-arrow-right');
+                                }
+                            }
+                        }
+                    });
+                });
+            } else {
+                // We ARE in SPA Mode:
+                function showSection(targetId) {
+                    spaSections.forEach(sec => sec.classList.remove("active"));
+                    spaTocItems.forEach(item => item.classList.remove("active"));
+
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add("active");
+
+                        // SPA MathJax fix: Re-calculate equations now that the section is visible
+                        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                            try {
+                                MathJax.typesetClear([targetSection]);
+                                MathJax.typesetPromise([targetSection]).catch(err => console.error("SPA MathJax error:", err));
+                            } catch (e) {
+                                console.warn("MathJax couldn't re-render:", e);
+                            }
+                        }
+
+                        // Agregar botones de navegación al final de la sección
+                        const currentIndex = Array.from(spaSections).findIndex(sec => sec.id === targetId);
+                        let navContainer = targetSection.querySelector(".spa-nav-buttons");
+
+                        if (!navContainer) {
+                            navContainer = document.createElement("div");
+                            navContainer.className = "spa-nav-buttons";
+                            targetSection.appendChild(navContainer);
+                        }
+
+                        let navHTML = "";
+                        if (currentIndex > 0) {
+                            const prevId = spaSections[currentIndex - 1].id;
+                            navHTML += '<a href="#' + prevId + '" class="spa-btn spa-btn-prev"><i class="fas fa-arrow-left"></i> Lección Anterior</a>';
+                        } else {
+                            navHTML += '<div></div>'; // Espaciador flex
+                        }
+
+                        if (currentIndex < spaSections.length - 1) {
+                            const nextId = spaSections[currentIndex + 1].id;
+                            navHTML += '<a href="#' + nextId + '" class="spa-btn spa-btn-next">Siguiente Lección <i class="fas fa-arrow-right"></i></a>';
+                        }
+
+                        navContainer.innerHTML = navHTML;
+
+                        // Añadir los event listeners a los botones
+                        navContainer.querySelectorAll("a.spa-btn").forEach(btn => {
+                            btn.addEventListener("click", function (e) {
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                try {
+                                    const selectedId = this.getAttribute('href').substring(1);
+                                    if (selectedId) {
+                                        history.pushState(null, null, "#" + encodeURIComponent(selectedId));
+                                        showSection(selectedId);
+                                    }
+                                } catch (err) {
+                                    console.error("Error with nav buttons:", err);
+                                }
+                            });
+                        });
+                    }
+
+                    const activeLink = Array.from(spaTocLinks).find(link => link.getAttribute("href") === "#" + targetId);
+                    if (activeLink && activeLink.parentElement) {
+                        activeLink.parentElement.classList.add("active");
+                    }
+
+                    window.scrollTo(0, 0);
+                }
+
+                // Modificamos el comportamiento de los links del TOC
+                spaTocLinks.forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation(); // Evita que otros listeners pre-existentes actúen
+
+                        try {
+                            const rawHref = this.getAttribute('href').substring(1);
+                            const targetId = decodeURIComponent(rawHref);
+                            // Prevent pushing empty hashes
+                            if (targetId) {
+                                history.pushState(null, null, "#" + targetId);
+                                showSection(targetId);
+                            }
+                        } catch (err) {
+                            console.error("Error navigating to section:", err);
+                        }
+
+                        // Comportamiento móvil: colapsar menú
+                        if (window.innerWidth < 768) {
+                            document.body.classList.add('toc-collapsed');
+                            const icon = document.querySelector('#tocToggle i');
+                            if (icon) {
+                                icon.classList.remove('fa-bars');
+                                icon.classList.add('fa-arrow-right');
+                            }
+                        }
+                    });
+                });
+
+                // Carga inicial
+                const initialHash = window.location.hash.substring(1);
+                if (initialHash) {
+                    try {
+                        const decodedHash = decodeURIComponent(initialHash);
+                        if (document.getElementById(decodedHash)) {
+                            showSection(decodedHash);
+                        } else {
+                            showSection(spaSections[0].id);
+                        }
+                    } catch (e) {
+                        showSection(spaSections[0].id);
+                    }
+                } else {
+                    showSection(spaSections[0].id);
+                }
+
+                // Manejar botones Atrás/Adelante
+                window.addEventListener("popstate", function () {
+                    const hash = window.location.hash.substring(1);
+                    if (hash) {
+                        try {
+                            const decodedHash = decodeURIComponent(hash);
+                            if (document.getElementById(decodedHash)) {
+                                showSection(decodedHash);
+                            } else {
+                                showSection(spaSections[0].id);
+                            }
+                        } catch (e) {
+                            showSection(spaSections[0].id);
+                        }
+                    } else {
+                        showSection(spaSections[0].id);
+                    }
+                });
+            }
+        });
 
     </script>
 
@@ -381,6 +516,89 @@ document.addEventListener('DOMContentLoaded', function () {
     $endfor$
 
     <style>
+        /* Estilos para el SPA */
+        .section.level1 {
+            height: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            opacity: 0 !important;
+        }
+
+        .section.level1.active {
+            height: auto !important;
+            overflow: visible !important;
+            visibility: visible !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            opacity: 1 !important;
+            animation: fadeIn 0.5s;
+        }
+
+        /* Botones de Navegación SPA */
+        .spa-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .spa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+            background-color: var(--usta-primary, #3D008D);
+            color: white !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .spa-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: var(--usta-secondary, #ED1E79);
+            color: white !important;
+        }
+
+        .spa-btn-prev {
+            background-color: #64748b;
+        }
+
+        .spa-btn-prev:hover {
+            background-color: #475569;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Resaltar item activo en el TOC */
+        #TOC ul li.active>a {
+            font-weight: bold;
+            color: #e74c3c !important;
+            border-left: 3px solid #e74c3c !important;
+            padding-left: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
         /* USTA Brand Colors */
         :root {
             --usta-primary: #3D008D;
@@ -807,7 +1025,8 @@ document.addEventListener('DOMContentLoaded', function () {
         /* ════════════════════════════════════════════
            BLOQUES DE CÓDIGO — Fuente y reset base
            ════════════════════════════════════════════ */
-        pre, code {
+        pre,
+        code {
             font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
         }
 
@@ -818,15 +1037,17 @@ document.addEventListener('DOMContentLoaded', function () {
             margin: 1.75rem 0 0 0;
             border-radius: 12px 12px 0 0;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-            background: #282c34;   /* Atom One Dark */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            background: #282c34;
+            /* Atom One Dark */
         }
 
         /* Chip de lenguaje — se coloca por JS vía data-lang */
         div.sourceCode[data-lang]::before {
             content: attr(data-lang);
             position: absolute;
-            top: 0; right: 0;
+            top: 0;
+            right: 0;
             padding: 0.18rem 0.8rem;
             font-size: 0.68rem;
             font-weight: 700;
@@ -834,8 +1055,8 @@ document.addEventListener('DOMContentLoaded', function () {
             text-transform: uppercase;
             border-bottom-left-radius: 8px;
             z-index: 3;
-            color: rgba(255,255,255,0.9);
-            background: rgba(255,255,255,0.10);
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.10);
             pointer-events: none;
         }
 
@@ -858,100 +1079,233 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /* Borde de color por lenguaje */
-        div.sourceCode[data-lang="R"]      { border-top: 3px solid #4492f3; }
-        div.sourceCode[data-lang="Python"] { border-top: 3px solid #f7c948; }
+        div.sourceCode[data-lang="R"] {
+            border-top: 3px solid #4492f3;
+        }
+
+        div.sourceCode[data-lang="Python"] {
+            border-top: 3px solid #f7c948;
+        }
+
         div.sourceCode[data-lang="Bash"],
-        div.sourceCode[data-lang="Shell"]  { border-top: 3px solid #50fa7b; }
-        div.sourceCode[data-lang="SQL"]    { border-top: 3px solid #8be9fd; }
-        div.sourceCode[data-lang="JS"]     { border-top: 3px solid #ffb86c; }
+        div.sourceCode[data-lang="Shell"] {
+            border-top: 3px solid #50fa7b;
+        }
+
+        div.sourceCode[data-lang="SQL"] {
+            border-top: 3px solid #8be9fd;
+        }
+
+        div.sourceCode[data-lang="JS"] {
+            border-top: 3px solid #ffb86c;
+        }
 
         /* ════════════════════════════════════════════
            TOKENS DE PANDOC — Atom One Dark
            Pandoc emite estas clases cuando highlight != null
            ════════════════════════════════════════════ */
         /* Palabras clave: if, else, for, while, function, library, import… */
-        code span.kw  { color: #c678dd; font-weight: 600; }
+        code span.kw {
+            color: #c678dd;
+            font-weight: 600;
+        }
+
         /* Tipos de dato */
-        code span.dt  { color: #e5c07b; }
+        code span.dt {
+            color: #e5c07b;
+        }
+
         /* Strings / cadenas de texto */
-        code span.st  { color: #98c379; }
+        code span.st {
+            color: #98c379;
+        }
+
         /* Caracteres especiales dentro de strings */
-        code span.sc  { color: #56b6c2; }
+        code span.sc {
+            color: #56b6c2;
+        }
+
         /* Números enteros, flotantes, binarios, hex */
-        code span.dv, code span.fl,
-        code span.bn, code span.ix  { color: #d19a66; }
+        code span.dv,
+        code span.fl,
+        code span.bn,
+        code span.ix {
+            color: #d19a66;
+        }
+
         /* Operadores: +, -, <-, |>, %>%, ::, !, ==… */
-        code span.op  { color: #56b6c2; }
+        code span.op {
+            color: #56b6c2;
+        }
+
         /* Comentarios */
-        code span.co  { color: #5c6370; font-style: italic; }
+        code span.co {
+            color: #5c6370;
+            font-style: italic;
+        }
+
         /* Nombre de función en llamada */
-        code span.fu  { color: #61afef; }
+        code span.fu {
+            color: #61afef;
+        }
+
         /* Variables / identificadores ordinarios */
-        code span.va  { color: #e06c75; }
+        code span.va {
+            color: #e06c75;
+        }
+
         /* Constantes: TRUE FALSE NULL NA Inf NaN None True False */
-        code span.cn  { color: #d19a66; font-weight: 600; }
+        code span.cn {
+            color: #d19a66;
+            font-weight: 600;
+        }
+
         /* Preprocesador / directivas */
-        code span.pp  { color: #e5c07b; }
+        code span.pp {
+            color: #e5c07b;
+        }
+
         /* Alertas y errores */
-        code span.al  { color: #ff5555; font-weight: 600; }
+        code span.al {
+            color: #ff5555;
+            font-weight: 600;
+        }
+
         /* Advertencias */
-        code span.wa  { color: #ffb86c; font-style: italic; }
+        code span.wa {
+            color: #ffb86c;
+            font-style: italic;
+        }
+
         /* Anotaciones */
-        code span.an  { color: #6272a4; font-style: italic; }
+        code span.an {
+            color: #6272a4;
+            font-style: italic;
+        }
+
         /* Otro texto */
-        code span.ot  { color: #abb2bf; }
+        code span.ot {
+            color: #abb2bf;
+        }
+
         /* Información */
-        code span.in  { color: #6272a4; font-style: italic; }
+        code span.in {
+            color: #6272a4;
+            font-style: italic;
+        }
+
         /* Verbatim / texto sin procesar */
-        code span.vs  { color: #98c379; }
+        code span.vs {
+            color: #98c379;
+        }
+
         /* Importaciones especiales */
-        code span.im  { color: #c678dd; }
+        code span.im {
+            color: #c678dd;
+        }
+
         /* Atributos */
-        code span.at  { color: #e5c07b; }
+        code span.at {
+            color: #e5c07b;
+        }
+
         /* Extensiones del lenguaje */
-        code span.ex  { color: #61afef; }
+        code span.ex {
+            color: #61afef;
+        }
+
         /* Documentación */
-        code span.do  { color: #5c6370; font-style: italic; }
+        code span.do {
+            color: #5c6370;
+            font-style: italic;
+        }
 
         /* ════════════════════════════════════════════
            TOKENS DE HIGHLIGHT.JS — Atom One Dark
            hljs emite estas clases cuando se re-aplica por JS
            ════════════════════════════════════════════ */
-        .hljs-keyword, .hljs-selector-tag,
-        .hljs-built_in, .hljs-name,
-        .hljs-tag                         { color: #c678dd; font-weight: 600; }
-        .hljs-string, .hljs-doctag        { color: #98c379; }
-        .hljs-title, .hljs-section,
-        .hljs-selector-id                 { color: #61afef; }
-        .hljs-variable, .hljs-template-variable { color: #e06c75; }
-        .hljs-number, .hljs-literal       { color: #d19a66; }
-        .hljs-comment, .hljs-quote        { color: #5c6370; font-style: italic; }
-        .hljs-symbol, .hljs-bullet,
-        .hljs-link, .hljs-meta,
+        .hljs-keyword,
+        .hljs-selector-tag,
+        .hljs-built_in,
+        .hljs-name,
+        .hljs-tag {
+            color: #c678dd;
+            font-weight: 600;
+        }
+
+        .hljs-string,
+        .hljs-doctag {
+            color: #98c379;
+        }
+
+        .hljs-title,
+        .hljs-section,
+        .hljs-selector-id {
+            color: #61afef;
+        }
+
+        .hljs-variable,
+        .hljs-template-variable {
+            color: #e06c75;
+        }
+
+        .hljs-number,
+        .hljs-literal {
+            color: #d19a66;
+        }
+
+        .hljs-comment,
+        .hljs-quote {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .hljs-symbol,
+        .hljs-bullet,
+        .hljs-link,
+        .hljs-meta,
         .hljs-selector-attr,
-        .hljs-selector-pseudo             { color: #56b6c2; }
-        .hljs-attr, .hljs-type            { color: #e5c07b; }
-        .hljs-addition                    { color: #98c379; }
-        .hljs-deletion                    { color: #ff5555; }
-        .hljs-emphasis                    { font-style: italic; }
-        .hljs-strong                      { font-weight: 700; }
+        .hljs-selector-pseudo {
+            color: #56b6c2;
+        }
+
+        .hljs-attr,
+        .hljs-type {
+            color: #e5c07b;
+        }
+
+        .hljs-addition {
+            color: #98c379;
+        }
+
+        .hljs-deletion {
+            color: #ff5555;
+        }
+
+        .hljs-emphasis {
+            font-style: italic;
+        }
+
+        .hljs-strong {
+            font-weight: 700;
+        }
 
         /* ════════════════════════════════════════════
            BLOQUES DE OUTPUT — salida de consola/knitr
            Pandoc pone el output en <pre> suelto (sin clase)
            justo después del div.sourceCode
            ════════════════════════════════════════════ */
-        div.sourceCode + pre {
+        div.sourceCode+pre {
             margin: 0 0 1.75rem 0;
             padding: 0.9rem 1.5rem;
             background: #1e2127;
             color: #9da5b4;
             border-radius: 0 0 12px 12px;
             border-left: 3px solid #4a4f5a;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.83rem;
             overflow-x: auto;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
         }
 
         /* Output genérico (sin código previo) */
@@ -968,20 +1322,26 @@ document.addEventListener('DOMContentLoaded', function () {
         /* ════════════════════════════════════════════
            CÓDIGO INLINE
            ════════════════════════════════════════════ */
-        :not(pre) > code {
-            background: rgba(61,0,141,0.09);
+        :not(pre)>code {
+            background: rgba(61, 0, 141, 0.09);
             color: var(--usta-primary);
-            border: 1px solid rgba(61,0,141,0.18);
+            border: 1px solid rgba(61, 0, 141, 0.18);
             padding: 0.12rem 0.45rem;
             border-radius: 5px;
             font-size: 0.87em;
         }
 
         /* Scrollbar delgada dentro de bloques de código */
-        div.sourceCode pre::-webkit-scrollbar { height: 5px; }
-        div.sourceCode pre::-webkit-scrollbar-track { background: transparent; }
+        div.sourceCode pre::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        div.sourceCode pre::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
         div.sourceCode pre::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.14);
+            background: rgba(255, 255, 255, 0.14);
             border-radius: 3px;
         }
 
@@ -1097,7 +1457,7 @@ document.addEventListener('DOMContentLoaded', function () {
         /* =============================================
            MATEMÁTICAS — MathJax 3
            ============================================= */
-        
+
         /* Contenedores de ecuaciones generados por Pandoc */
         span.math.display,
         p.math.display,
@@ -1117,7 +1477,7 @@ document.addEventListener('DOMContentLoaded', function () {
             background: linear-gradient(135deg, rgba(61, 0, 141, 0.04) 0%, rgba(237, 30, 121, 0.04) 100%);
             border-radius: 10px;
             border-left: 4px solid var(--usta-primary);
-            border-right: 1px solid rgba(61,0,141,0.1);
+            border-right: 1px solid rgba(61, 0, 141, 0.1);
             scrollbar-width: thin;
             text-align: center;
         }
@@ -1143,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', function () {
         mjx-container[jax="CHTML"][display="true"]::-webkit-scrollbar {
             height: 4px;
         }
+
         mjx-container[jax="CHTML"][display="true"]::-webkit-scrollbar-thumb {
             background: rgba(61, 0, 141, 0.3);
             border-radius: 2px;
@@ -1165,6 +1526,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /* Pantallas pequeñas */
         @media (max-width: 768px) {
+
             mjx-container[jax="CHTML"][display="true"],
             .math.display {
                 font-size: 0.92em;
@@ -1278,6 +1640,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 color: black !important;
             }
         }
+
+        /* Code folding styles */
+        div.sourceCode {
+            position: relative;
+            margin: 1em 0;
+        }
+
+        div.sourceCode button.code-folding-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+
+        div.sourceCode button.code-folding-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        div.sourceCode.has-code-button pre {
+            margin-top: 0;
+        }
+
+        div.sourceCode.r-markdown-source-code div.sourceCode pre {
+            margin-top: 0;
+        }
     </style>
 </head>
 
@@ -1330,6 +1726,78 @@ document.addEventListener('DOMContentLoaded', function () {
             $endfor$
         </div>
     </div>
+
+    <!-- Code Folding Script -->
+    <script>
+    (function() {
+      // Wait for DOM to be ready
+      function initCodeFolding() {
+        var sourceCodeBlocks = document.querySelectorAll('div.sourceCode');
+        
+        sourceCodeBlocks.forEach(function(block) {
+          // Skip if already has a button
+          if (block.querySelector('.code-folding-btn')) return;
+          
+          // Find the pre element
+          var pre = block.querySelector('pre');
+          if (!pre) return;
+          
+          // Create toggle button
+          var button = document.createElement('button');
+          button.className = 'code-folding-btn';
+          button.textContent = 'Show';
+          button.setAttribute('type', 'button');
+          button.setAttribute('aria-expanded', 'true');
+          button.setAttribute('aria-label', 'Toggle code');
+          
+          // Add click handler
+          button.addEventListener('click', function() {
+            var isExpanded = button.getAttribute('aria-expanded') === 'true';
+            var codeContainer = block.querySelector('.sourceCodeWrapper') || pre.parentElement;
+            
+            if (isExpanded) {
+              // Hide code
+              pre.style.display = 'none';
+              button.textContent = 'Show';
+              button.setAttribute('aria-expanded', 'false');
+              block.classList.add('code-folded');
+            } else {
+              // Show code
+              pre.style.display = 'block';
+              button.textContent = 'Hide';
+              button.setAttribute('aria-expanded', 'true');
+              block.classList.remove('code-folded');
+            }
+          });
+          
+          // Add class for styling
+          block.classList.add('has-code-button');
+          
+          // Insert button at the beginning of the sourceCode div
+          block.insertBefore(button, block.firstChild);
+          
+          // Set initial state based on code_folding option
+          // If code_folding: hide, start hidden
+          var codeFoldingHidden = document.body.classList.contains('code-folding-hide');
+          if (codeFoldingHidden) {
+            pre.style.display = 'none';
+            button.textContent = 'Show';
+            button.setAttribute('aria-expanded', 'false');
+            block.classList.add('code-folded');
+          } else {
+            button.textContent = 'Hide';
+          }
+        });
+      }
+      
+      // Run after page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCodeFolding);
+      } else {
+        initCodeFolding();
+      }
+    })();
+    </script>
 </body>
 
 </html>
