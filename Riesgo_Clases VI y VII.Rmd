@@ -1,0 +1,1327 @@
+---
+title: "Teoría del riesgo"
+subtitle: 'Clase VI y VII: Riesgo sitemático y no sistemático, Valor en Riesgo'
+author: "Javier Mauricio Sierra"
+#date: "2024-02-10"
+output:
+  html_document:
+    template:        usta_template.html
+    toc:             true
+    toc_depth:       1
+    code_folding:    hide
+    number_sections: false
+    mathjax:         null
+    pandoc_args:     ["--mathjax"]
+    syntax-highlighting: pygments
+    self_contained:  true
+---
+
+```{r, echo=FALSE}
+# Crear un nuevo virtualenv
+# python3.11 -m venv ~/.virtualenvs/r-reticulate-stable
+# Forzar el uso del nuevo entorno Python estable
+# reticulate::use_python("~/.virtualenvs/r-reticulate-stable/bin/python", required = TRUE)
+
+# Verificar
+# reticulate::py_config()
+
+# Instalar arch y dependencias
+# reticulate::py_install(c("numpy", "pandas","matplotlib", "arch", "plotly"))
+# reticulate::py_install(c("scikit-learn"))
+```
+
+
+
+```{r setup, include=FALSE}
+library(reticulate)
+reticulate::use_python("~/.virtualenvs/r-reticulate-stable/bin/python", required = TRUE)
+# reticulate::py_install(c("numpy", "pandas", "arch", "scikit-learn"))
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE)
+
+knitr::opts_chunk$set(
+    echo = T,
+    collapse = F,
+    fig.align = "center",
+    warning = F,
+    message = F,
+    fig.height = 6,
+    fig.width = 7.5,
+    tidy = F,
+    comment = "##",
+    prompt = F,
+    highlight = T
+)
+
+library(quantmod)
+library(lubridate)
+library(dplyr)
+```
+
+
+# Riesgo sistemático
+
+El riesgo sistemático, también conocido como riesgo de mercado o riesgo no diversificable, se refiere a la parte del riesgo total de una inversión que está asociada con factores macroeconómicos y que no se puede eliminar mediante la diversificación. A diferencia del riesgo específico de una empresa o riesgo no sistemático, que puede mitigarse invirtiendo en una variedad de activos, el riesgo sistemático afecta a toda la economía o a grandes sectores de ella, y por lo tanto, afecta a casi todas las inversiones en cierta medida.
+
+Algunos ejemplos de factores que contribuyen al riesgo sistemático incluyen:
+
+1. **Cambios en las políticas gubernamentales**: Cambios en las tasas de interés, políticas fiscales, o regulaciones que pueden afectar a la economía en general.
+2. **Inflación**: Las fluctuaciones en los niveles de precios pueden afectar el poder adquisitivo y, por ende, el desempeño económico general.
+3. **Recesiones económicas**: Periodos de declive económico general afectan a casi todas las empresas y sectores.
+4. **Guerras y conflictos geopolíticos**: Estos eventos pueden causar incertidumbre en los mercados globales, afectando la economía a gran escala.
+5. **Desastres naturales**: Aunque su impacto puede ser más localizado, eventos como terremotos, huracanes, o pandemias pueden tener efectos significativos en la economía global.
+
+Debido a que el riesgo sistemático es inherente al mercado en su conjunto, los inversores suelen buscar compensaciones a través de una prima de riesgo, es decir, esperan obtener un retorno adicional por asumir un mayor nivel de riesgo. La gestión del riesgo sistemático a menudo implica estrategias como la asignación de activos y el uso de instrumentos financieros derivados para protegerse contra pérdidas potenciales.
+
+
+
+## ¿Cómo medir el riesgo sistemático?
+
+
+
+El riesgo sistemático se mide comúnmente a través del **Beta (β)** de una inversión, que es un indicador de su volatilidad en relación con el mercado en general. El Beta es una medida estadística que compara la rentabilidad de una acción (o cartera) con la de un índice de mercado de referencia, proporcionando una idea de cómo se espera que se comporte el activo frente a movimientos del mercado.
+
+### Cómo Funciona el Beta
+
+- **Beta = 1**: Significa que el precio del activo tiende a moverse con el mercado. Si el mercado aumenta en un 10%, se espera que el activo también aumente en un 10%, y viceversa.
+- **Beta > 1**: Indica que el activo es más volátil que el mercado. Por ejemplo, un Beta de 1.5 sugiere que, por cada 1% de movimiento en el mercado, el activo se moverá aproximadamente 1.5% en la misma dirección. Esto implica un mayor riesgo, pero también la posibilidad de mayores rendimientos.
+- **Beta < 1**: Significa que el activo es menos volátil que el mercado. Un Beta de 0.5 indica que se espera que el activo se mueva la mitad de lo que se mueva el mercado. Estos activos suelen ser menos riesgosos, pero también ofrecen menores rendimientos potenciales.
+
+### Cálculo del Beta
+
+El Beta de una acción se calcula utilizando regresión lineal, comparando los rendimientos del activo con los rendimientos del mercado durante un período específico. Matemáticamente, se expresa como:
+
+>\[ \beta = \frac{Cov(R_a, R_m)}{Var(R_m)} \]
+
+donde:
+
+- $Cov(R_a, R_m)$ es la covarianza entre el rendimiento del activo ($R_a$) y el rendimiento del mercado ($R_m$).
+
+- $Var(R_m)$ es la varianza de los rendimientos del mercado.
+
+
+
+## Beta de un portafolio
+
+
+
+El beta de un portafolio es una medida de la sensibilidad del rendimiento del portafolio a los movimientos del mercado en general. En otras palabras, indica cómo se espera que el valor del portafolio cambie en respuesta a un cambio en el rendimiento del mercado. El beta se utiliza ampliamente en el Modelo de Precios de Activos de Capital (CAPM) para estimar el retorno esperado de una inversión, considerando tanto el riesgo del mercado como el riesgo no sistemático de la inversión.
+
+### Cómo se Calcula
+
+El beta de un portafolio ($\beta_{\text{portafolio}}$) se calcula como el promedio ponderado de los betas de los activos individuales que componen el portafolio, donde las ponderaciones son las proporciones del valor total del portafolio que cada activo representa. Matemáticamente, se expresa como:
+
+>\[
+\beta_{\text{portafolio}} = \sum_{i=1}^{n} w_i \beta_i
+\]
+
+donde:
+
+- $w_i$ es la ponderación del activo $i$ en el portafolio (basado en el valor de mercado),
+
+- $\beta_i$ es el beta del activo $i$,
+
+- $n$ es el número de activos en el portafolio.
+
+### Interpretación
+
+- **Beta = 1**: Si el beta del portafolio es 1, significa que se espera que el portafolio se mueva en la misma dirección y en la misma magnitud que el mercado. Es decir, si el mercado aumenta (o disminuye) en un 10%, se espera que el portafolio también aumente (o disminuya) aproximadamente en un 10%.
+
+- **Beta > 1**: Un beta mayor que 1 indica que el portafolio es más volátil que el mercado. Si el mercado sube o baja, se espera que el portafolio suba o baje en una proporción mayor.
+
+- **Beta < 1**: Un beta menor que 1 sugiere que el portafolio es menos volátil que el mercado. Los movimientos del portafolio serán menos pronunciados que los del mercado.
+
+- **Beta < 0**: Aunque es menos común, un beta negativo indica que el portafolio se mueve en dirección opuesta al mercado. Esto podría ser el caso de inversiones en activos que tienden a incrementar su valor cuando el mercado baja, como ciertos tipos de derivados o activos de inversión inversa.
+
+
+
+
+## Ejemplo (Calculo del $\beta$ para ecopetrol usando el indice msci)
+
+
+
+```{python pressure_1, echo= TRUE, eval=TRUE}
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+import plotly.figure_factory as ff
+import pandas as pd
+from scipy.stats import jarque_bera, kstest, norm
+from sklearn.utils import resample
+
+import yfinance as yf
+from datetime import datetime, timedelta
+
+pd.set_option("display.precision", 4)
+
+import warnings
+warnings.filterwarnings('ignore')
+
+symbol = "EC"  
+start_date = datetime(2022, 1, 1)  
+end_date = datetime(2025, 9, 16) 
+
+# Descargar y aplanar columnas
+data = yf.download(symbol, start=start_date, end=end_date, progress=False)
+if isinstance(data.columns, pd.MultiIndex):
+    data.columns = ['_'.join(col).strip() for col in data.columns.values]
+
+data['Fecha'] = data.index
+data.reset_index(inplace=True)
+data = data[['Fecha'] + [col for col in data.columns if col != 'Fecha' and col != 'Date']]
+
+# Repetir para MSCI
+symbol_msci = "MSCI"  
+data_msci = yf.download(symbol_msci, start=start_date, end=end_date, progress=False)
+if isinstance(data_msci.columns, pd.MultiIndex):
+    data_msci.columns = ['_'.join(col).strip() for col in data_msci.columns.values]
+
+data_msci['Fecha'] = data_msci.index
+data_msci.reset_index(inplace=True)
+data_msci = data_msci[['Fecha'] + [col for col in data_msci.columns if col != 'Fecha' and col != 'Date']]
+
+# Calcular rendimientos
+data['Rendimientos'] = (data['Close_EC'] - data['Open_EC']) / data['Open_EC']
+data_msci['Rendimientos'] = (data_msci['Close_MSCI'] - data_msci['Open_MSCI']) / data_msci['Open_MSCI']
+
+# Alinear fechas
+data['Fecha'] = pd.to_datetime(data['Fecha'], dayfirst=True)
+data_msci['Fecha'] = pd.to_datetime(data_msci['Fecha'], dayfirst=True)
+
+# Unir ambos dataframes en base a la columna 'Fecha'
+data_merged = pd.merge(data, data_msci, on='Fecha', suffixes=('_ecopetrol', '_msci'))
+
+# Calcular covarianza entre los rendimientos de Ecopetrol y los del MSCI
+covariance = data_merged['Rendimientos_ecopetrol'].cov(data_merged['Rendimientos_msci'])
+
+# Calcular la varianza de los rendimientos del MSCI
+variance_msci = data_merged['Rendimientos_msci'].var()
+
+# Calcular el beta de Ecopetrol
+beta_ecopetrol = covariance / variance_msci
+
+# Crear tabla de resumen
+data_summary = pd.DataFrame({
+    'Métrica': ['Covarianza', 'Varianza_MSCI', 'Beta_Ecopetrol'],
+    'Valor': [covariance, variance_msci, beta_ecopetrol]
+})
+
+fig = ff.create_table(data_summary.round(8))
+fig.show()
+```
+
+
+
+La covarianza entre los rendimientos de Ecopetrol y los del índice MSCI es $5.11 \times 10^{-5}$, y la varianza de los rendimientos del índice MSCI es $0.0002967$. Con estos valores, el coeficiente beta ($\beta$) de Ecopetrol con respecto al índice MSCI es aproximadamente $0.173$.
+
+Este beta indica que Ecopetrol tiene un riesgo sistemático relativamente bajo en comparación con el mercado (índice MSCI), ya que un beta menor a $1$ sugiere que el activo es menos volátil que el mercado en general. En términos prácticos, si el mercado (índice MSCI) se mueve un 1%, se esperaría que Ecopetrol se mueva en promedio un 0.173% en la misma dirección.
+
+
+
+# Modelo CAPM 
+
+El Modelo de Precios de Activos de Capital (CAPM, capital asset pricing model) es un modelo teórico que describe la relación entre el riesgo sistemático y el rendimiento esperado de los activos, especialmente en los mercados financieros. Es ampliamente utilizado para estimar el rendimiento esperado de una inversión, dada su relación con el riesgo de mercado. El CAPM se basa en la premisa de que los inversores necesitan ser compensados por dos tipos de riesgos: el tiempo que su dinero está invertido (tasa de rendimiento libre de riesgo) y el nivel de riesgo adicional (riesgo de mercado) asociado con la inversión.
+
+
+
+## Fórmula del CAPM
+
+
+
+La fórmula básica del CAPM es:
+
+>\[
+E(R_i) = R_f + \beta_i(E(R_m) - R_f)
+\]
+
+donde:
+
+- $E(R_i)$ es el rendimiento esperado del activo $i$.
+
+- $R_f$ es la tasa de rendimiento libre de riesgo.
+
+- $\beta_i$ es el beta del activo $i$, que mide la sensibilidad de los rendimientos del activo a los movimientos del mercado.
+
+- $E(R_m)$ es el rendimiento esperado del mercado.
+
+- $E(R_m) - R_f$ es la prima de riesgo del mercado, que representa el rendimiento adicional esperado por asumir un mayor riesgo.
+
+
+
+## Componentes Clave
+
+
+
+- **Rendimiento Libre de Riesgo ($R_f$)**: Es el rendimiento que los inversores esperan de una inversión sin riesgo. En la práctica, las tasas de los bonos del gobierno a largo plazo suelen utilizarse como proxy para $R_f$.
+
+- **Beta ($\beta$)**: Mide la volatilidad o el riesgo relativo de un activo en comparación con el mercado en su conjunto. 
+
+- **Rendimiento del Mercado ($E(R_m)$)**: Es el rendimiento total esperado del mercado de valores. Se utiliza el rendimiento de un índice de mercado amplio, como el S&P 500, como aproximación de $E(R_m)$.
+
+- **Prima de Riesgo del Mercado ($E(R_m) - R_f$)**: Representa el rendimiento adicional que un inversor espera obtener de una inversión riesgosa sobre la tasa libre de riesgo.
+
+
+
+## Aplicaciones y Limitaciones
+
+
+
+**Aplicaciones**:
+
+- **Estimación de Costos de Capital**: El CAPM es ampliamente utilizado por las empresas para estimar el costo de capital propio.
+
+- **Selección de Portafolio**: Ayuda a los inversores a evaluar si un activo está generando un rendimiento adecuado para su nivel de riesgo.
+
+- **Valoración de Activos**: Se utiliza en la valoración de activos financieros y en la toma de decisiones de inversión.
+
+**Limitaciones**:
+
+- **Suposiciones Realistas**: El CAPM asume mercados perfectos, ausencia de costos de transacción, y que todos los inversores tienen acceso a la misma información, lo cual no siempre es realista.
+
+- **Riesgo Sistemático Único**: Se centra solo en el riesgo sistemático, ignorando el riesgo no sistemático, lo cual puede no ser adecuado para todos los activos o carteras.
+
+- **Estabilidad de Beta**: La estabilidad de $\beta$ a lo largo del tiempo puede ser cuestionable, lo que afecta la precisión de las estimaciones de rendimiento esperado.
+
+> A pesar de sus limitaciones, el CAPM sigue siendo un modelo fundamental en finanzas para la comprensión del riesgo y el rendimiento, y es una herramienta esencial en el análisis financiero y la gestión de inversiones.
+
+
+
+## Ejemplo (CAPM para ecopetrol)
+
+
+
+```{python pressure_1_1, echo= TRUE, eval=TRUE}
+# Tasa de rendimiento libre de riesgo anualizada
+Rf_annual = 0.02  # 2%
+
+# Convertir la tasa de rendimiento libre de riesgo a diaria, asumiendo 250 días de trading al año
+Rf_daily = (1 + Rf_annual) ** (1/250) - 1
+
+# Calcular el rendimiento esperado del mercado como el promedio de los rendimientos diarios del índice MSCI
+E_Rm = data_msci['Rendimientos'].mean()
+
+# Aplicar la fórmula del CAPM para calcular el rendimiento esperado del activo
+E_Ri = Rf_daily + beta_ecopetrol * (E_Rm - Rf_daily)
+
+data_summary_capm = pd.DataFrame({
+    '': ['Tasa de rendimiento libre de riesgo a diaria', 'Rendimiento esperado del mercado', 'Rendimiento esperado del activo'],
+    'Valor': [Rf_daily, E_Rm, E_Ri]
+})
+
+fig = ff.create_table(data_summary_capm.round(8))
+fig.show()
+```
+
+
+
+Para aplicar el modelo CAPM y calcular el rendimiento esperado de un activo, es necesario definir una tasa de rendimiento libre de riesgo (\( R_f \)). Esta tasa debería reflejar las condiciones económicas actuales y ser representativa del horizonte temporal del análisis. En este ejemplo, asumimos una \( R_f \) del 2% anual, basada en el rendimiento de bonos gubernamentales a corto plazo emitidos por un país con una economía estable. Además, necesitamos calcular el rendimiento esperado del mercado ($E(R_m)$), que podemos aproximar como el promedio de los rendimientos del índice MSCI. Luego, aplicaremos la fórmula del CAPM para obtener el rendimiento esperado del activo.
+
+
+La tasa de rendimiento libre de riesgo diaria ($R_f$) es aproximadamente 0.000079%, el rendimiento esperado del mercado ($E(R_m)$) es $0.0000865\%$, y el rendimiento esperado del activo ($E(R_i)$) calculado mediante el modelo CAPM es aproximadamente $0.0000804\%$.
+
+> Leer con cuidado el siguiente parrafo, funciona para un periodo diferente de tiempo
+
+Es importante notar que el rendimiento esperado del mercado es negativo en este cálculo, lo cual podría reflejar un periodo específico de bajo rendimiento en el índice MSCI. Esto, a su vez, impacta en el rendimiento esperado del activo, haciéndolo también negativo bajo el modelo CAPM. El valor de beta indica que el activo es menos volátil que el mercado, lo cual se refleja en un rendimiento esperado menos afectado por las fluctuaciones del mercado en comparación con un activo de beta más alta.
+
+Este análisis proporciona una visión basada en los datos históricos usados y las suposiciones mencionadas. En la práctica, la selección de $R_f$, así como la interpretación de beta y $E(R_m)$, deben adaptarse al contexto del análisis y las condiciones del mercado.
+
+
+
+# Riesgo no sistemático
+
+El riesgo no sistemático, también conocido como riesgo específico o riesgo diversificable, se refiere a la parte del riesgo total de una inversión que es específica a una empresa o industria particular y que puede ser eliminado o reducido a través de la diversificación de la cartera de inversiones. A diferencia del riesgo sistemático, que afecta a toda la economía o a grandes sectores de la misma, el riesgo no sistemático se relaciona con factores que pueden impactar negativamente el rendimiento de inversiones individuales o de sectores específicos sin afectar al mercado en su conjunto.
+
+Algunos ejemplos de factores que contribuyen al riesgo no sistemático incluyen:
+
+1. **Decisiones de gestión**: Cambios en la dirección ejecutiva, estrategias de negocio equivocadas o fallas en la gestión de una empresa pueden afectar su rendimiento.
+
+2. **Situación financiera**: Problemas financieros específicos de una empresa, como un alto nivel de deuda o problemas de liquidez.
+
+3. **Exposición sectorial**: Factores que afectan a sectores específicos, como cambios tecnológicos, regulaciones nuevas o más estrictas, o disminución de la demanda de productos o servicios.
+
+4. **Cuestiones legales o regulatorias**: Litigios, multas o cambios en la legislación que afectan negativamente a una empresa o sector.
+
+5. **Desastres naturales o accidentes**: Eventos como incendios, terremotos o derrames químicos que pueden impactar a empresas específicas o a industrias localizadas.
+
+La diversificación de la cartera es la principal estrategia para manejar el riesgo no sistemático. Esto implica invertir en una variedad de activos de diferentes empresas, sectores e incluso países, con el fin de reducir el impacto negativo que eventos adversos específicos puedan tener en el rendimiento global de la cartera. La idea es que, si un activo se desempeña mal debido a un factor no sistemático, la pérdida puede ser compensada por el rendimiento de otros activos en la cartera que no están afectados por el mismo factor.
+
+
+
+## ¿Cómo medir el riesgo no sistemático?
+
+
+
+La medición del riesgo no sistemático implica cuantificar el grado de riesgo asociado con factores específicos a una empresa o sector que pueden afectar el rendimiento de una inversión. Aunque el riesgo no sistemático se puede reducir mediante la diversificación, medirlo cuantitativamente puede ser más desafiante que medir el riesgo sistemático. Sin embargo, hay varias metodologías y métricas que pueden ayudar a estimar el riesgo no sistemático:
+
+1. **Varianza y Desviación Estándar de los Rendimientos Específicos**: La varianza y la desviación estándar de los rendimientos de una inversión específica pueden proporcionar una medida de su volatilidad, que es un indicador de riesgo. Sin embargo, estos indicadores incluyen tanto el riesgo sistemático como el no sistemático. Para aislar el riesgo no sistemático, se puede considerar la porción de la varianza que no se explica por los movimientos del mercado en general.
+
+2. **Beta**: Aunque el beta de una acción o cartera mide su sensibilidad a los movimientos del mercado (riesgo sistemático), comparando el beta de una inversión individual con el beta de una cartera diversificada, se puede obtener una idea del riesgo no sistemático. Una inversión con un beta bajo en comparación con el mercado podría tener un mayor componente de riesgo no sistemático.
+
+3. **Modelo de Precios de Activos de Capital (CAPM)**: El CAPM es una herramienta que puede ayudar a descomponer la varianza total de los rendimientos de una inversión en componentes sistemáticos y no sistemáticos. La parte del rendimiento no explicada por el CAPM se atribuye a factores específicos de la inversión, es decir, al riesgo no sistemático.
+
+4. **Análisis de regresión**: Realizar un análisis de regresión de los rendimientos de una inversión contra un índice de mercado puede ayudar a identificar la proporción de los rendimientos que se puede atribuir a movimientos del mercado (riesgo sistemático) y lo que queda podría considerarse como atribuible al riesgo no sistemático.
+
+5. **Ratio de Sharpe**: Aunque este ratio se usa principalmente para evaluar el rendimiento ajustado al riesgo de una inversión, considerando tanto rendimientos como la volatilidad total, puede ofrecer insights indirectos sobre el riesgo no sistemático, especialmente al comparar diferentes inversiones o carteras.
+
+Para medir específicamente el riesgo no sistemático, es importante tener en cuenta que este tipo de riesgo es diversificable. Por lo tanto, las medidas que se centran en la varianza o volatilidad específica de una inversión, después de considerar los efectos de la diversificación, pueden proporcionar una perspectiva sobre el riesgo no sistemático que enfrenta una inversión particular.
+
+
+
+# Valor en riesgo 
+
+El Valor en Riesgo (VaR, por sus siglas en inglés) permite estimar la pérdida máxima que una cartera de inversiones podría enfrentar en un periodo determinado con un nivel de confianza específico. Es decir, el VaR responde a la pregunta: "Dado un nivel de confianza, ¿cuál es la pérdida máxima que podría sufrir mi cartera en un periodo de tiempo específico?".
+
+El concepto de VaR se desarrolló en la década de 1990, convirtiéndose rápidamente en una herramienta estándar para la gestión del riesgo financiero. Su popularidad creció especialmente después de que fue adoptado por J.P. Morgan para su sistema de gestión de riesgos RiskMetrics, publicado en 1994, que compartió públicamente la metodología para calcular el VaR. Desde entonces, el uso del VaR se ha expandido no solo en el sector financiero sino también en otras industrias para la gestión de riesgos.
+
+El VaR se utiliza para:
+
+1. **Medir el riesgo de mercado**: Ayuda a cuantificar el riesgo de pérdidas en una cartera debido a movimientos en los precios de mercado.
+
+2. **Gestión de riesgos**: Proporciona un marco cuantitativo para establecer límites de riesgo y para la toma de decisiones en la asignación de recursos.
+
+3. **Cumplimiento regulatorio**: Las instituciones financieras usan el VaR para demostrar a los reguladores que están adecuadamente capitalizadas contra riesgos potenciales.
+
+4. **Comunicación**: Es una medida que permite comunicar el riesgo de forma comprensible a la dirección y a partes interesadas, como inversores o reguladores.
+
+**Interpretación del VaR**
+
+Un VaR de $1$ millón al 95% de confianza para un periodo de un día significa que, bajo condiciones normales de mercado, se espera que la pérdida diaria no supere $1$ millón en el 95% de los días. Es importante señalar que en el 5% de los días restantes, la pérdida podría ser mayor a $1$ millón, y el VaR no proporciona información sobre la magnitud exacta de esas pérdidas
+
+Es crucial entender que el VaR tiene limitaciones y no captura el riesgo de eventos extremos más allá del umbral del nivel de confianza elegido. Además, el VaR no dice nada sobre el tamaño de la pérdida que podría ocurrir más allá de ese umbral. 
+
+
+
+## Calculo del Var: métodos paramétricos
+
+
+
+El cálculo del Valor en Riesgo (VaR) mediante métodos paramétricos, también conocido como el método de varianza-covarianza, es uno de los enfoques más comunes y sencillos para estimar el VaR. Este método asume que los rendimientos de los activos de una cartera siguen una distribución de probabilidad normal (o log-normal para rendimientos logarítmicos) y utiliza la media y la desviación estándar de los rendimientos históricos para calcular el VaR. La premisa central del enfoque paramétrico es que las propiedades estadísticas (parámetros) de la distribución de los rendimientos pueden resumir adecuadamente el riesgo de la cartera.
+
+### Cálculo del VaR Paramétrico
+
+Para calcular el VaR paramétrico de una cartera, se siguen estos pasos generales:
+
+1. **Determinación de parámetros**: Calcula la media ($\mu$) y la desviación estándar ($\sigma$) de los rendimientos de la cartera. En un contexto de cartera, esto podría requerir calcular primero los rendimientos esperados de la cartera a partir de los rendimientos esperados de los activos individuales y luego la varianza (o desviación estándar) de la cartera utilizando las varianzas y covarianzas de los activos individuales.
+
+2. **Selección del nivel de confianza**: Elige un nivel de confianza ($\alpha$), comúnmente 95% o 99%. Este nivel de confianza está asociado con un valor Z (Z-score), que indica cuántas desviaciones estándar se debe mover uno desde la media para capturar ese porcentaje de los datos bajo la curva de distribución normal.
+
+3. **Cálculo del VaR**: Utiliza la fórmula del VaR paramétrico:
+
+> **Fórmula general del VaR paramétrico:**
+>\[
+   \text{VaR}_{\alpha} = -\left(\mu \cdot t + Z_{\alpha} \cdot \sigma \cdot \sqrt{t}\right) \times V
+\]
+
+donde:
+- $\mu$ es el rendimiento esperado (media de los rendimientos),
+- $Z_{\alpha}$ es el valor Z correspondiente al nivel de confianza $\alpha$ (para 95%, $Z_{0.95} \approx 1.645$; para 99%, $Z_{0.99} \approx 2.326$),
+- $\sigma$ es la desviación estándar de los rendimientos (volatilidad),
+- $t$ es el horizonte de tiempo (en días, semanas, etc.),
+- $V$ es el valor de la posición o cartera.
+
+> **Nota:** El signo negativo se incluye porque el VaR se expresa como una pérdida positiva. Cuando $\mu$ es pequeño (cercano a cero), es común simplificar la fórmula ignorando el término de la media:
+
+>\[
+   \text{VaR}_{\alpha} \approx Z_{\alpha} \cdot \sigma \cdot \sqrt{t} \times V
+\]
+
+### Interpretación
+
+El resultado te da la pérdida máxima esperada en el valor monetario (por ejemplo, USD) para el horizonte de tiempo seleccionado y dentro del nivel de confianza especificado. Si el VaR diario de una cartera es de $\$100,000$ al 95% de confianza, significa que hay una probabilidad del 5% de que la cartera pierda más de $\$100,000$ en un día.
+
+### Ventajas y Limitaciones
+
+- **Ventajas**:
+
+  - Simplicidad y facilidad de implementación.
+  
+  - Requiere menos datos históricos que otros métodos no paramétricos.
+  
+  - Facilidad para agregar el riesgo a través de diferentes activos, asumiendo la normalidad de los rendimientos.
+
+- **Limitaciones**:
+
+  - La suposición de normalidad puede no ser válida para todos los tipos de distribuciones de rendimientos, especialmente en mercados financieros donde las "colas gruesas" (eventos extremos) son comunes.
+  
+  - No captura bien el riesgo de eventos extremos fuera del nivel de confianza seleccionado.
+  
+  - La precisión depende de la estabilidad de la media y la desviación estándar de los rendimientos, que pueden variar significativamente en periodos de crisis.
+
+### Validación del Supuesto de Normalidad
+
+El método paramétrico asume que los rendimientos siguen una distribución normal. Sin embargo, los rendimientos financieros frecuentemente exhiben:
+
+- **Colas pesadas (fat tails)**: Mayor probabilidad de eventos extremos que una distribución normal.
+- **Asimetría (skewness)**: Tendencia a tener más rendimientos extremos positivos o negativos.
+- **Curtosis excesiva (kurtosis)**: Pico más pronunciado y colas más gruesas que la normal.
+
+Por esta razón, es importante realizar pruebas de normalidad antes de aplicar el método paramétrico. Las pruebas comunes incluyen:
+
+1. **Prueba de Jarque-Bera**: Evalúa si los coeficientes de asimetría y curtosis coinciden con los de una distribución normal.
+2. **Prueba de Shapiro-Wilk**: Compara la distribución observada con una normal.
+3. **Gráfico Q-Q**: Comparación visual de los cuantiles observados contra los teóricos de una distribución normal.
+
+Si se rechaza la normalidad, se pueden considerar alternativas:
+- Usar una distribución *t de Student* con grados de libertad ajustados.
+- Emplear métodos no paramétricos (simulación histórica).
+- Utilizar simulación Montecarlo con distribuciones más flexibles.
+
+### Ejemplo: VaR Ecopetrol
+
+```{python pressure_2, echo= TRUE, eval=TRUE}
+from scipy.stats import jarque_bera, norm
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+
+# Calcular estadísticos descriptivos
+media_rendimientos = data['Rendimientos'].mean()
+desviacion_std_rendimientos = data['Rendimientos'].std()
+skewness = data['Rendimientos'].skew()
+kurtosis = data['Rendimientos'].kurtosis()
+
+# Prueba de Jarque-Bera para normalidad
+jb_stat, jb_pvalue = jarque_bera(data['Rendimientos'])
+
+# Nivel de confianza del 95%, correspondiente a un Z-score de aproximadamente 1.645 para una distribución normal
+z_score = 1.645
+# Dado que estamos trabajando con rendimientos diarios, el horizonte de tiempo es 1, y se omite en la fórmula
+VaR_95 = z_score * desviacion_std_rendimientos
+
+# Crear tabla de resumen
+data_summary_VaR = pd.DataFrame({
+    'Métrica': ['Media de rendimientos', 'Desviación estándar', 'Skewness', 'Kurtosis', 
+                'Jarque-Bera stat', 'JB p-value', 'VaR_95'],
+    'Valor': [media_rendimientos, desviacion_std_rendimientos, skewness, kurtosis, 
+              jb_stat, jb_pvalue, VaR_95]
+})
+fig = ff.create_table(data_summary_VaR.round(6))
+fig.show()
+
+# Interpretación de la prueba de normalidad
+alpha = 0.05
+if jb_pvalue < alpha:
+    print(f"\n⚠️  Se RECHAZA la normalidad (p-value = {jb_pvalue:.6f} < {alpha})")
+    print("Los rendimientos NO siguen una distribución normal.")
+    print("⚠️  El VaR paramétrico puede no ser adecuado.")
+else:
+    print(f"\n✓ No se rechaza la normalidad (p-value = {jb_pvalue:.6f} >= {alpha})")
+    print("Los rendimientos podrían seguir una distribución normal.")
+```
+
+
+
+El cálculo del VaR paramétrico requiere conocer la media y la desviación estándar de estos rendimientos. Luego, aplicaremos la fórmula del VaR paramétrico considerando un nivel de confianza del 95%, que corresponde a un valor Z (Z-score) aproximado de 1.645 para una distribución normal. Vamos a calcular esto ahora.
+
+Basándonos en los rendimientos, la media de los rendimientos es aproximadamente $0.0009$ y la desviación estándar es aproximadamente $0.019$. Utilizando estos valores y un nivel de confianza del $95\%$ (con un Z-score de 1.645), el Valor en Riesgo (VaR) paramétrico diario es de aproximadamente 0.032.
+
+
+#### **Interpretación**
+
+Esto significa que, bajo condiciones normales de mercado y con un nivel de confianza del 95%, no esperamos que la pérdida exceda el 3.2% de valor en un solo día. En otras palabras, hay una probabilidad del 5% de que la pérdida sea mayor al 3.2% en un día.
+
+
+
+### Ejemplo: VaR Ecopetrol a un año
+
+Para convertir el Valor en Riesgo (VaR) diario a un VaR anual, se utiliza el ajuste por la raíz cuadrada del tiempo debido a la propiedad de escalabilidad del tiempo en la volatilidad de los rendimientos. Este ajuste se basa en la suposición de que la volatilidad (desviación estándar) de los rendimientos aumenta con la raíz cuadrada del tiempo. Por lo tanto, si deseamos anualizar el VaR calculado para un día, multiplicaremos el VaR diario por la raíz cuadrada del número de días de negociación en un año. Comúnmente se utiliza un estimado de 252 días de negociación para los mercados financieros.
+
+La fórmula para convertir el VaR diario al VaR anual sería:
+
+>\[
+\text{VaR anual} = \text{VaR diario} \times \sqrt{252}
+\]
+
+Aplicaremos esta fórmula al VaR diario que ya hemos calculado.
+
+El Valor en Riesgo (VaR) anual para el mismo activo, utilizando un nivel de confianza del 95%, es aproximadamente 0.514. 
+
+#### **Interpretación**
+
+Esto significa que, bajo condiciones normales de mercado y con un nivel de confianza del 95%, no esperamos que la pérdida exceda el 51.4% del valor de la inversión en el transcurso de un año. En otras palabras, hay una probabilidad del 5% de que la pérdida sea mayor al 51.4% en un año. Esta ampliación del VaR al contexto anual ofrece una perspectiva sobre el riesgo a largo plazo asociado con la inversión en este activo.
+
+
+```{python pressure_2_1, echo= TRUE, eval=TRUE}
+# Número de días de negociación en un año
+dias_negociacion = 252
+# Cálculo del VaR anual
+VaR_anual = VaR_95 * (dias_negociacion ** 0.5)
+VaR_anual
+```
+
+
+
+
+## VaR de un Portafolio
+
+
+
+El Valor en Riesgo (VaR) de un portafolio mide el riesgo de pérdida potencial en el valor de dicho portafolio, bajo condiciones normales de mercado, para un periodo de tiempo específico y con un cierto nivel de confianza. A diferencia del VaR de un solo activo, calcular el VaR de un portafolio requiere tener en cuenta no solo la volatilidad de cada activo individual sino también cómo estos activos se mueven juntos, es decir, su correlación. 
+
+### Cálculo del VaR de un Portafolio
+
+El cálculo del VaR de un portafolio puede ser más complejo que el de un solo activo debido a la necesidad de considerar las correlaciones entre los rendimientos de los activos. Un enfoque común es el método paramétrico (también conocido como el enfoque de varianza-covarianza), que utiliza la matriz de covarianza de los activos del portafolio.
+
+La fórmula básica para el VaR paramétrico de un portafolio, asumiendo una distribución normal de los rendimientos, es similar a la del VaR de un solo activo, pero incorporando la volatilidad del portafolio ($\sigma_{portafolio}$):
+
+>\[
+\text{VaR}_{\text{portafolio}} = Z \times \sigma_{\text{portafolio}} \times \sqrt{t}
+\]
+
+donde:
+
+- $Z$ es el Z-score asociado al nivel de confianza elegido.
+
+- $\sigma_{\text{portafolio}}$ es la volatilidad (desviación estándar) del portafolio, calculada a partir de la matriz de covarianza de los rendimientos de los activos y sus ponderaciones en el portafolio.
+
+- $t$ es el horizonte de tiempo.
+
+Para calcular $\sigma_{\text{portafolio}}$, se utiliza la siguiente fórmula:
+
+>\[
+\sigma_{\text{portafolio}} = \left(\mathbf{w}^\top \mathbf{\Sigma} \mathbf{w}\right)^{1/2}
+\]
+
+donde:
+
+- $\mathbf{w}$ es el vector columna de las ponderaciones de los activos en el portafolio.
+
+- $\mathbf{\Sigma}$ es la matriz de covarianza de los rendimientos de los activos.
+
+- $\mathbf{w}^\top$ es el vector transpuesto de $\mathbf{w}$, convirtiéndolo en un vector fila.
+
+La matriz de covarianza $\mathbf{\Sigma}$ es una matriz cuadrada $n \times n$, donde $n$ es el número de activos en el portafolio. Cada elemento $\sigma_{ij}$ de $\mathbf{\Sigma}$ representa la covarianza entre los rendimientos de los activos $i$ y $j$. Para un solo activo, la diagonal principal de $\mathbf{\Sigma}$ contiene las varianzas de los activos ($\sigma_{ii}^2$), mientras que los elementos fuera de la diagonal representan las covarianzas entre los pares de activos.
+
+La expresión $\mathbf{w}^\top \mathbf{\Sigma} \mathbf{w}$ es un producto matricial que resulta en un escalar. Este escalar representa la varianza total del portafolio, y la raíz cuadrada de este valor nos da la volatilidad del portafolio ($\sigma_{\text{portafolio}}$).
+
+### Ejemplo Ilustrativo
+
+Para entender mejor, consideremos un portafolio con dos activos, $A$ y $B$, con ponderaciones $w_A$ y $w_B$, volatilidades $\sigma_A$ y $\sigma_B$, y una covarianza entre ellos de $\sigma_{AB}$. La matriz de covarianza $\mathbf{\Sigma}$ y el vector de ponderaciones $\mathbf{w}$ se verían así:
+
+\[
+\mathbf{\Sigma} = \begin{bmatrix} \sigma_{A}^2 & \sigma_{AB} \\ \sigma_{AB} & \sigma_{B}^2 \end{bmatrix}, \quad \mathbf{w} = \begin{bmatrix} w_A \\ w_B \end{bmatrix}
+\]
+
+La varianza del portafolio sería:
+
+\[
+\sigma_{\text{portafolio}}^2 = \begin{bmatrix} w_A & w_B \end{bmatrix} \begin{bmatrix} \sigma_{A}^2 & \sigma_{AB} \\ \sigma_{AB} & \sigma_{B}^2 \end{bmatrix} \begin{bmatrix} w_A \\ w_B \end{bmatrix}
+\]
+
+Expandido, esto se convierte en:
+
+\[
+\sigma_{\text{portafolio}}^2 = w_A^2\sigma_{A}^2 + 2w_Aw_B\sigma_{AB} + w_B^2\sigma_{B}^2
+\]
+
+Y finalmente, la volatilidad del portafolio ($\sigma_{\text{portafolio}}$) es la raíz cuadrada de esta varianza. Esta fórmula general se puede extender a portafolios con más de dos activos, considerando todas las covarianzas entre pares de activos y sus respectivas ponderaciones.
+
+
+### Interpretación
+
+La interpretación del VaR de un portafolio es similar a la de un solo activo. Por ejemplo, un VaR de un portafolio de $\$1$ millón al 95% de confianza durante un día indica que hay un 5% de probabilidad de que el portafolio pierda más de $\$1$ millón en el próximo día bajo condiciones normales de mercado.
+
+### Importancia de la Diversificación
+
+La correlación entre los activos juega un papel crucial en el cálculo del VaR de un portafolio. La diversificación (tener activos no perfectamente correlacionados) puede reducir el VaR del portafolio, ya que las pérdidas en algunos activos pueden ser compensadas por ganancias en otros. 
+
+
+
+
+## VaR No paramétrico
+
+
+
+El VaR no paramétrico es un enfoque para calcular el VaR que no asume una distribución específica de los rendimientos de la cartera. En contraste con los métodos paramétricos (como el VaR basado en la distribución normal o la distribución t de Student), que dependen de suposiciones sobre la forma de la distribución de los retornos de los activos, el VaR no paramétrico se basa en los datos históricos reales para modelar el riesgo de pérdida. Esto lo hace particularmente útil en situaciones donde los rendimientos de los activos no siguen distribuciones normales, o cuando la estructura de dependencia entre los activos es compleja y no se puede capturar fácilmente con modelos paramétricos.
+
+### Cómo se Calcula el VaR No Paramétrico
+
+Una de las técnicas más comunes para calcular el VaR no paramétrico es el método de simulación histórica. Este método implica los siguientes pasos:
+
+> **Recolección de Datos Históricos:** Este procedimiento implica varios aspectos importantes que garantizan la calidad y relevancia de los datos utilizados para modelar el riesgo potencial de pérdida. A continuación, se desarrollan más detalladamente estos aspectos:
+
+#### 1. Definición del Horizonte Temporal
+
+El primer paso en la recolección de datos históricos es definir el horizonte temporal de los datos. Esto se refiere al período de tiempo del cual se recolectarán los datos de rendimiento de los activos o la cartera. La longitud del horizonte temporal debe ser suficiente para capturar las variaciones en los rendimientos bajo diferentes condiciones de mercado, incluyendo períodos de alta volatilidad y crisis financieras. Un horizonte temporal comúnmente utilizado podría ser de 1 a 5 años, aunque esto puede variar según la estrategia de inversión y la tolerancia al riesgo de la entidad.
+
+#### 2. Selección de la Frecuencia de los Datos
+
+La frecuencia de los datos históricos (diaria, semanal, mensual, etc.) es otro aspecto importante. La selección de la frecuencia adecuada depende del propósito del análisis de riesgo y de la naturaleza de la cartera o los activos. Por ejemplo, una cartera de negociación activa que se ajusta con frecuencia puede requerir datos diarios para capturar adecuadamente el riesgo, mientras que una cartera de inversión a largo plazo puede ser adecuadamente evaluada con datos mensuales.
+
+#### 3. Calidad y Limpieza de los Datos
+
+La calidad de los datos históricos es fundamental para obtener una estimación precisa del VaR. Esto incluye asegurarse de que los datos estén libres de errores, sean completos y consistentes a lo largo del tiempo. La limpieza de datos puede involucrar la corrección de errores obvios, el manejo de valores faltantes y la aseguración de que los datos sean comparables a lo largo del tiempo (por ejemplo, ajustando los rendimientos de acciones por dividendos o splits).
+
+#### 4. Consideración de Eventos Externos
+
+Es importante considerar el impacto de eventos significativos que podrían haber afectado los rendimientos históricos. Esto incluye crisis financieras, cambios regulatorios importantes, o eventos geopolíticos. Estos eventos pueden proporcionar información valiosa sobre cómo podrían comportarse los activos o la cartera bajo condiciones extremas.
+
+#### 5. Adaptación a la Composición de la Cartera
+
+Si la cartera ha experimentado cambios significativos en su composición a lo largo del tiempo, es importante ajustar los datos históricos para reflejar estos cambios. Esto puede implicar ponderar los rendimientos históricos de los activos individuales según su peso en la cartera en diferentes momentos.
+
+#### 6. Aseguramiento de la Representatividad
+
+Finalmente, los datos históricos recopilados deben ser representativos de las condiciones de mercado bajo las cuales la cartera continuará operando. Esto significa considerar si las condiciones históricas son probablemente similares a las futuras, o si hay cambios en el panorama económico, financiero o de inversión que podrían hacer que los datos históricos sean menos relevantes para el futuro.
+
+
+1. **Ordenamiento de los Rendimientos:** Los rendimientos se ordenan de menor a mayor, proporcionando una distribución empírica de los rendimientos.
+
+2. **Determinación del Percentil:** Se selecciona el percentil correspondiente al nivel de confianza deseado. Por ejemplo, para un VaR al 95% de confianza, se busca el valor en el 5% inferior de la distribución de rendimientos. Esto significa que el 5% de los peores rendimientos se encuentra por debajo de este umbral.
+
+3. **Cálculo del VaR:** El valor encontrado en el paso anterior representa el VaR no paramétrico. Es la estimación de la pérdida máxima esperada con el nivel de confianza seleccionado.
+
+### Ventajas y Desventajas del VaR No Paramétrico
+
+**Ventajas:**
+
+- **Flexibilidad:** Al no asumir una distribución específica, es adecuado para una amplia gama de distribuciones de rendimientos.
+
+- **Intuitivo:** Se basa directamente en la experiencia histórica, lo cual es fácil de entender y comunicar.
+
+- **Adaptable:** Puede incorporar fácilmente cambios en la distribución de rendimientos a lo largo del tiempo.
+
+**Desventajas:**
+
+- **Dependencia de Datos Históricos:** La calidad y la longitud de los datos históricos pueden afectar significativamente la precisión del VaR calculado.
+
+- **No Captura Eventos Futuros:** Puede no prever eventos futuros no reflejados en el período histórico utilizado.
+
+- **Sensibilidad a la Ventana Temporal:** La elección de la ventana temporal para los datos históricos puede influir en el resultado.
+
+
+
+## Simulación histórica 
+
+
+
+El proceso de simulación histórica es un enfoque no paramétrico para estimar el Valor en Riesgo (VaR) que se basa directamente en los rendimientos históricos de una cartera o activos individuales. Este método es especialmente útil cuando no queremos hacer suposiciones específicas sobre la distribución de los rendimientos de los activos. A continuación, se detalla el proceso paso a paso:
+
+### Paso 1: Recolección de Datos Históricos
+
+El primer paso es recopilar una serie de rendimientos históricos para los activos o carteras que se están analizando. Como se mencionó anteriormente, estos datos deben abarcar un horizonte temporal relevante y ser de una frecuencia adecuada para capturar la dinámica del mercado y la volatilidad de los activos.
+
+### Paso 2: Cálculo de los Rendimientos Históricos
+
+A partir de los precios históricos recolectados, se calculan los rendimientos históricos para el periodo considerado. Los rendimientos pueden calcularse de manera simple o logarítmica, dependiendo de la preferencia del analista y la naturaleza de los datos.
+
+### Paso 3: Construcción de la Distribución de Rendimientos
+
+Con los rendimientos históricos calculados, se construye una distribución empírica de los rendimientos. Esto se hace simplemente ordenando los rendimientos de menor a mayor. Esta distribución empírica representa el rango de resultados posibles basados en la experiencia histórica.
+
+### Paso 4: Determinación del Percentil Correspondiente al Nivel de Confianza
+
+El siguiente paso es determinar el valor del rendimiento en el percentil que corresponde al nivel de confianza deseado para el VaR. Por ejemplo, para un VaR con un 95% de confianza, se identifica el rendimiento que se sitúa en el 5% más bajo de la distribución empírica. Este rendimiento representa el peor escenario dentro del 95% de los casos.
+
+### Paso 5: Cálculo del VaR
+
+El VaR se calcula entonces como el valor negativo de este rendimiento (si se está mirando pérdidas) ajustado al tamaño de la posición o valor de la cartera. Esto se traduce en el monto máximo que se espera perder en el periodo de tiempo dado, con un cierto nivel de confianza, basado en los rendimientos históricos.
+
+### Ejemplo Práctico
+
+Supongamos que, tras ordenar los rendimientos de una cartera de un año hacia atrás, encontramos que el 5% más bajo de los rendimientos empieza en -3%. Si el valor total de la cartera es de \$1,000,000, entonces el VaR al 95% de confianza, para el periodo de tiempo considerado (digamos, un día), sería de \$30,000. Esto significa que, con un 95% de confianza, la cartera no perderá más de $30,000 en un día, basado en el rendimiento histórico.
+
+### Ejemplo: Acción de ecopetrol
+
+Para explicar el método de simulación histórica usando estos datos, nos centraremos en la columna de "Rendimientos", ya que es la que necesitamos para calcular el VaR no paramétrico. El proceso implica los siguientes pasos:
+
+### Paso 1: Ordenar los Rendimientos
+
+Primero, organizaremos los rendimientos de menor a mayor para crear una distribución empírica de los rendimientos históricos.
+
+### Paso 2: Determinar el Percentil para el Nivel de Confianza
+
+Seleccionaremos el percentil correspondiente al nivel de confianza deseado. Por ejemplo, para un VaR al 95% de confianza, buscaríamos el valor en el 5% más bajo de la distribución de rendimientos.
+
+### Paso 3: Calcular el VaR
+
+```{python VaR_np_1, echo= TRUE, eval=TRUE}
+# Paso 1: Ordenar los rendimientos de menor a mayor
+rendimientos_ordenados = data['Rendimientos'].sort_values().reset_index(drop=True)
+
+# Paso 2: Determinar el percentil para el nivel de confianza del 95%
+# Para un nivel de confianza del 95%, queremos el valor en el 5% más bajo de la distribución de rendimientos.
+nivel_confianza = 0.05
+indice_percentil = int(len(rendimientos_ordenados) * nivel_confianza)
+
+var_valor = rendimientos_ordenados.iloc[indice_percentil]
+var_valor
+```
+
+
+El VaR será el valor negativo del rendimiento encontrado en el paso anterior, ajustado por el tamaño de la posición o el valor total de la cartera.
+
+Supondremos un nivel de confianza del 95% para el cálculo del VaR.
+
+El Valor en Riesgo (VaR) al 95% de confianza, basado en los rendimientos históricos proporcionados, es aproximadamente -3.18%. Esto significa que, basado en los datos históricos, hay un 5% de probabilidad de que la acción pierda más del 3.18% de su valor en el período de tiempo correspondiente a un día. Es importante notar que este cálculo asume que las condiciones de mercado y el comportamiento de los precios en el futuro cercano serán similares a los observados en el pasado durante el período del cual se tomaron los datos.
+
+
+### Ventajas
+
+- **Intuitivo y Fácil de Implementar:** No requiere suposiciones complejas sobre la distribución de los rendimientos.
+- **Adaptable:** Puede actualizarse fácilmente con nuevos datos históricos.
+
+### Desventajas
+
+- **Dependencia de Datos Históricos:** No captura eventos futuros no reflejados en los datos históricos.
+- **Sensibilidad a la Ventana Temporal:** La elección del periodo histórico puede afectar significativamente los resultados.
+
+
+
+## Simulación bootstrap
+
+
+
+La simulación bootstrap es una técnica poderosa en estadísticas para estimar la distribución de un estadístico (como la media, la mediana, la varianza) a partir de una muestra de datos. Se basa en el muestreo repetido con reemplazo de la muestra original para generar muchas muestras simuladas, conocidas como réplicas bootstrap. Estas réplicas se utilizan para calcular distribuciones empíricas de prácticamente cualquier estadístico y, por lo tanto, permiten evaluar la variabilidad o incertidumbre de este estadístico sin necesidad de suposiciones estrictas sobre la forma de la distribución subyacente de la población de la cual se extrajo la muestra original.
+
+
+En el contexto de la teoría del riesgo y, más específicamente, en la estimación del Valor en Riesgo (VaR) y el Riesgo de Pérdida Esperada (Expected Shortfall, ES), la simulación bootstrap se puede utilizar para evaluar la incertidumbre en estas medidas de riesgo. Esto es particularmente útil cuando se trabaja con series de tiempo financieras, donde las propiedades estadísticas de los datos pueden cambiar con el tiempo.
+
+### Pasos para Realizar una Simulación Bootstrap
+
+1. **Selección de la Muestra Original**: Empiezas con tu conjunto de datos original, que en el contexto financiero, podría ser una serie de rendimientos diarios de un activo o cartera.
+
+2. **Muestreo con Reemplazo**: Realizas muestreo con reemplazo de tu conjunto de datos original para formar una muestra bootstrap. Esto significa que algunos datos pueden aparecer más de una vez en la muestra bootstrap, mientras que otros pueden no aparecer.
+
+3. **Cálculo de Estadísticos**: Calculas el estadístico de interés (por ejemplo, el VaR o el ES) utilizando la muestra bootstrap. Esto se repite muchas veces (por ejemplo, 1,000 o 10,000 veces) para generar una distribución de los estadísticos calculados.
+
+4. **Análisis de los Resultados**: Una vez que tienes la distribución de los estadísticos a partir de las múltiples réplicas bootstrap, puedes analizar esta distribución para obtener medidas de incertidumbre como el intervalo de confianza para el VaR o el ES. También puedes evaluar otras propiedades estadísticas, como la media o la mediana de esta distribución.
+
+### Ventajas de la Simulación Bootstrap
+
+- **Flexibilidad**: No requiere suposiciones sobre la distribución subyacente de los datos, lo que la hace aplicable a una amplia variedad de situaciones.
+
+- **Facilidad de Implementación**: Puede implementarse fácilmente con software estadístico o de cálculo, como R o Python.
+
+- **Comprensión de la Incertidumbre**: Proporciona una manera directa de estimar la variabilidad o incertidumbre de un estadístico, lo que es crucial para la toma de decisiones en condiciones de incertidumbre.
+
+### Limitaciones
+
+- **Dependencia de la Muestra Original**: La calidad y representatividad de la muestra original son cruciales, ya que la simulación bootstrap asume que esta muestra es representativa de la población subyacente.
+
+- **Computacionalmente Intensivo**: Requiere una gran cantidad de repeticiones para obtener estimaciones precisas, lo que puede ser computacionalmente costoso para conjuntos de datos grandes o modelos complejos.
+
+
+### Ejemplo: Ecopetrol
+
+Utilizando la técnica de simulación bootstrap con 1000 réplicas a partir de los datos proporcionados, hemos obtenido una estimación del Valor en Riesgo (VaR) al 95% de confianza para los rendimientos de la acción.
+
+```{python VaR_np_bt, echo= TRUE, eval=TRUE}
+
+# Lista para almacenar los resultados de cada réplica para el VaR al 95%
+n_replicas = 1000
+var_95_bootstrap = []
+
+for i in range(n_replicas):
+    # Generar una muestra bootstrap mediante muestreo con reemplazo
+    muestra_bootstrap = resample(data['Rendimientos'])
+    
+    # Calcular y almacenar el VaR al 95% para la muestra bootstrap
+    var_95 = np.percentile(muestra_bootstrap, 5)
+    var_95_bootstrap.append(var_95)
+
+# Calcular la media y el intervalo de confianza del 95% para el VaR obtenido de las réplicas bootstrap
+var_95_media = np.mean(var_95_bootstrap)
+var_95_ic_inf = np.percentile(var_95_bootstrap, 2.5)
+var_95_ic_sup = np.percentile(var_95_bootstrap, 97.5)
+
+var_95_media, var_95_ic_inf, var_95_ic_sup
+```
+
+
+La media del VaR al 95% de confianza, basada en las réplicas bootstrap, es aproximadamente -3.2%. Esto indica que, según el análisis bootstrap, se espera que, en promedio, el máximo que se perdería en un día con un 95% de confianza es el 2.82% del valor de la inversión.
+
+Además, el intervalo de confianza del 95% para el VaR calculado con las réplicas bootstrap se extiende desde aproximadamente -3.55% hasta -2.%. Este intervalo refleja la incertidumbre en la estimación del VaR y proporciona un rango dentro del cual se espera que se encuentre el verdadero VaR al 95% de confianza, basándonos en los datos históricos.
+
+### Bootstrap en un portafolio 
+
+Utilizar la simulación bootstrap para hallar el Valor en Riesgo (VaR) de un portafolio implica un proceso similar al descrito para un solo activo, pero con algunas consideraciones adicionales debido a la composición del portafolio. Aquí se detalla cómo podría llevarse a cabo este proceso:
+
+### Paso 1: Recolección de Datos Históricos
+
+Para un portafolio, necesitas los rendimientos históricos de todos los activos que lo componen. Estos pueden ser rendimientos diarios, semanales, o de cualquier otra frecuencia que se ajuste a tu análisis.
+
+### Paso 2: Calcular los Rendimientos Históricos del Portafolio
+
+Antes de aplicar el método bootstrap, debes calcular los rendimientos históricos del portafolio. Esto se hace combinando los rendimientos de los activos individuales según sus pesos en el portafolio. Por ejemplo, si tu portafolio consiste en dos activos, A y B, con pesos de 60% y 40% respectivamente, el rendimiento del portafolio en un día determinado sería:
+
+\[ Rendimiento_{portafolio} = (Rendimiento_A \times 0.6) + (Rendimiento_B \times 0.4) \]
+
+Este cálculo se repite para cada punto de tiempo en tus datos históricos para obtener una serie de rendimientos históricos del portafolio.
+
+### Paso 3: Aplicar la Simulación Bootstrap
+
+Con la serie de rendimientos históricos del portafolio, aplicas el método bootstrap:
+
+1. **Muestreo con Reemplazo**: Realizas muestreo con reemplazo de la serie de rendimientos del portafolio para generar una muestra bootstrap. Esto simula un posible escenario de rendimientos basado en la experiencia histórica.
+
+2. **Calcular el VaR de la Muestra Bootstrap**: Para cada muestra bootstrap, calculas el VaR al nivel de confianza deseado (por ejemplo, el 95%). Esto usualmente implica ordenar los rendimientos de la muestra bootstrap de menor a mayor y seleccionar el valor en el percentil correspondiente.
+
+3. **Repetir el Proceso**: Repites este proceso un gran número de veces (por ejemplo, 1,000 o 10,000 veces) para generar una distribución de los valores de VaR obtenidos de las muestras bootstrap.
+
+### Paso 4: Analizar los Resultados
+
+Finalmente, analizas la distribución de los valores de VaR generados a través de las réplicas bootstrap. Puedes calcular la media de estos valores de VaR como una estimación del VaR del portafolio, y también obtener un intervalo de confianza para esta estimación.
+
+### Consideraciones
+
+- **Correlaciones entre Activos**: Un aspecto crucial al trabajar con portafolios es considerar las correlaciones entre los activos. Las fluctuaciones en el valor del portafolio no solo dependen de los rendimientos de los activos individuales sino también de cómo estos rendimientos se relacionan entre sí.
+
+- **Datos Históricos Representativos**: Es importante asegurarse de que los datos históricos reflejen de manera adecuada las condiciones bajo las cuales esperas que el portafolio opere en el futuro.
+
+- **Computación**: El cálculo del VaR mediante simulación bootstrap para portafolios puede ser computacionalmente intensivo, especialmente para portafolios grandes con muchos activos.
+
+
+
+## Expected Shortfall (CVaR)
+
+El **Expected Shortfall (ES)**, también conocido como **Conditional Value at Risk (CVaR)**, es una medida de riesgo que complementa las limitaciones del VaR. Mientras que el VaR nos dice cuánto podemos perder *como máximo* con un cierto nivel de confianza, el Expected Shortfall nos dice *cuánto perdemos en promedio* cuando las pérdidas exceden el VaR.
+
+### ¿Por qué es Necesario el Expected Shortfall?
+
+El VaR tiene una limitación importante: **no es una medida de riesgo coherente** porque no satisface la propiedad de subaditividad (el riesgo de un portafolio diversificado debería ser menor o igual que la suma de los riesgos individuales). Además, el VaR no proporciona información sobre la magnitud de las pérdidas en la cola de la distribución más allá del nivel de confianza elegido.
+
+El Expected Shortfall resuelve estas limitaciones al responder la pregunta: **"Si las cosas salen mal (más allá del VaR), ¿cuánto esperamos perder en promedio?"**
+
+### Definición Formal
+
+El Expected Shortfall al nivel de confianza $\alpha$ se define como el promedio de las pérdidas que exceden el VaR al nivel $\alpha$:
+
+>\[
+\text{ES}_{\alpha} = -E\left[R \mid R < -\text{VaR}_{\alpha}\right]
+\]
+
+donde $R$ representa los rendimientos del activo o portafolio.
+
+Para una distribución normal estándar, el Expected Shortfall se puede calcular analíticamente como:
+
+>\[
+\text{ES}_{\alpha} = \mu - \sigma \cdot \frac{\phi\left(\Phi^{-1}(\alpha)\right)}{1-\alpha}
+\]
+
+donde:
+- $\phi(\cdot)$ es la función de densidad de probabilidad de la distribución normal estándar,
+- $\Phi^{-1}(\cdot)$ es la función de distribución acumulativa inversa (cuantil),
+- $\mu$ es la media de los rendimientos,
+- $\sigma$ es la desviación estándar de los rendimientos.
+
+### Interpretación
+
+Si el VaR al 95% de una cartera es de \$1 millón, significa que hay un 5% de probabilidad de perder más de \$1 millón en un día. El Expected Shortfall al 95% nos diría que, *cuando* ocurren esas pérdidas del 5% peor de los casos, la pérdida **promedio** es, por ejemplo, de \$1.5 millones.
+
+### Ventajas del Expected Shortfall
+
+- **Medida de riesgo coherente**: Satisface las propiedades de monotonicidad, subaditividad, homogeneidad positiva y traslacionalidad.
+- **Captura el riesgo de cola**: Proporciona información sobre la severidad de las pérdidas extremas.
+- **Más conservador**: Siempre es mayor o igual que el VaR para el mismo nivel de confianza.
+- **Recomendado por reguladores**: Basilea III y otras normativas financieras están adoptando el ES como medida complementaria o sustituta del VaR.
+
+### Cálculo del Expected Shortfall
+
+#### Método Paramétrico (distribución normal)
+
+Para una distribución normal, el ES se puede calcular directamente usando la fórmula analítica mostrada anteriormente.
+
+#### Método No Paramétrico (simulación histórica)
+
+Cuando no se asume una distribución específica, el ES se calcula como el promedio de los rendimientos que están por debajo del percentil correspondiente al VaR:
+
+>\[
+\text{ES}_{\alpha} = \frac{1}{k} \sum_{i=1}^{k} R_{(i)}
+\]
+
+donde $R_{(1)}, R_{(2)}, \ldots, R_{(k)}$ son los $k$ peores rendimientos, con $k = (1-\alpha) \times n$ y $n$ es el número total de observaciones.
+
+### Ejemplo: Expected Shortfall para Ecopetrol
+
+```{python ES_example, echo= TRUE, eval=TRUE}
+from scipy.stats import norm
+
+# Calcular Expected Shortfall paramétrico (asumiendo distribución normal)
+alpha = 0.05  # Nivel de confianza del 95%
+
+# Fórmula analítica del ES para distribución normal
+# ES = μ - σ * φ(Φ^(-1)(α)) / (1-α)
+mu = media_rendimientos
+sigma = desviacion_std_rendimientos
+
+# Calcular el cuantil z para alpha
+z_alpha = norm.ppf(alpha)
+
+# Calcular la función de densidad en z_alpha
+phi_z = norm.pdf(z_alpha)
+
+# Expected Shortfall paramétrico
+ES_parametrico = mu - sigma * phi_z / alpha
+
+# Expected Shortfall no paramétrico (simulación histórica)
+# Promedio de los rendimientos por debajo del VaR
+var_threshold = np.percentile(data['Rendimientos'], 5)  # VaR al 95%
+rendimientos_en_cola = data['Rendimientos'][data['Rendimientos'] <= var_threshold]
+ES_historico = rendimientos_en_cola.mean()
+
+# Crear tabla comparativa
+data_summary_ES = pd.DataFrame({
+    'Medida': ['VaR_95', 'ES_Paramétrico', 'ES_Histórico', 'Ratio ES/VaR'],
+    'Valor': [VaR_95, -ES_parametrico, -ES_historico, -ES_parametrico/VaR_95]
+})
+fig = ff.create_table(data_summary_ES.round(6))
+fig.show()
+
+print(f"\nInterpretación:")
+print(f"- VaR al 95%: {VaR_95:.4f} ({VaR_95*100:.2f}%)")
+print(f"- Expected Shortfall paramétrico: {-ES_parametrico:.4f} ({-ES_parametrico*100:.2f}%)")
+print(f"- Expected Shortfall histórico: {-ES_historico:.4f} ({-ES_historico*100:.2f}%)")
+print(f"\nEl ES es aproximadamente {-ES_parametrico/VaR_95:.2f} veces el VaR.")
+print(f"Esto significa que en los peores casos (5%), la pérdida promedio es {-ES_parametrico/VaR_95:.2f} veces mayor que el VaR.")
+```
+
+El Expected Shortfall proporciona una visión más completa del riesgo de cola. En el ejemplo anterior, si el ES es 1.25 veces el VaR, significa que **cuando** se superan las pérdidas del VaR (en el 5% peor de los casos), la pérdida promedio es 25% mayor que el VaR calculado.
+
+
+
+## Simulación Montecarlo
+
+
+
+La simulación de Montecarlo es una técnica matemática que permite entender el impacto de la variabilidad y el riesgo en modelos cuantitativos. Es ampliamente utilizada en finanzas, ingeniería, investigación de operaciones, y ciencias para simular el comportamiento de sistemas complejos que son difíciles de modelar con exactitud debido a la incertidumbre. En el contexto de la teoría del riesgo y la gestión de portafolios financieros, la simulación de Montecarlo se usa para estimar medidas de riesgo como el Valor en Riesgo (VaR) y el Riesgo de Pérdida Esperada (Expected Shortfall, ES), así como para modelar la evolución futura de precios de activos y los rendimientos de portafolios bajo diferentes escenarios de mercado.
+
+### ¿Cómo Funciona la Simulación de Montecarlo?
+
+1. **Definición del Modelo**: Se define un modelo matemático del sistema o proceso que se desea simular. En finanzas, esto podría involucrar la definición de las ecuaciones que describen los movimientos de precios de los activos, incluyendo supuestos sobre rendimientos, volatilidad, correlaciones, y otros factores de mercado.
+
+2. **Generación de Variables Aleatorias**: Se generan series de variables aleatorias que representan los factores de riesgo relevantes dentro del modelo. Esto puede incluir, por ejemplo, fluctuaciones en tasas de interés, cambios en precios de acciones, etc. Estas variables pueden seguir distintas distribuciones de probabilidad, como la normal, log-normal, o cualquier otra que se ajuste a los datos históricos o a las expectativas del analista.
+
+3. **Simulación de Trayectorias**: Utilizando las variables aleatorias generadas, se simulan múltiples trayectorias (escenarios) para el modelo a lo largo de un horizonte temporal específico. Cada trayectoria representa un posible futuro del sistema bajo estudio.
+
+4. **Cálculo de Resultados**: Para cada trayectoria simulada, se calculan las métricas de interés, como el VaR o el ES. Esto implica, por ejemplo, determinar las pérdidas (o ganancias) máximas con un cierto nivel de confianza.
+
+5. **Análisis Estadístico**: Finalmente, se realiza un análisis estadístico de los resultados obtenidos de todas las trayectorias simuladas. Esto puede incluir el cálculo de medias, medianas, desviaciones estándar, y la construcción de intervalos de confianza. Para el caso del VaR, se identifica el valor de pérdida que no se supera con un nivel de confianza dado (por ejemplo, el 95%).
+
+### Ventajas de la Simulación de Montecarlo
+
+- **Flexibilidad**: Puede adaptarse a una amplia variedad de modelos y situaciones, permitiendo incorporar fácilmente múltiples variables y sus interacciones.
+
+- **Análisis de Riesgo y Incertidumbre**: Ofrece una herramienta poderosa para analizar cómo la incertidumbre en variables clave impacta en los resultados del modelo.
+
+- **Optimización y Toma de Decisiones**: Ayuda en la toma de decisiones al proporcionar distribuciones de probabilidad para los resultados, en lugar de un único valor estimado.
+
+### Limitaciones
+
+- **Dependencia del Modelo**: Los resultados están fuertemente influenciados por las hipótesis y estructuras del modelo utilizado, incluyendo la elección de las distribuciones de probabilidad.
+
+- **Intensidad Computacional**: La generación de un gran número de trayectorias puede requerir una capacidad de computo significativa, especialmente para modelos complejos.
+
+
+#### Ejemplo: Estimación del VaR de un Portafolio mediante Simulación de Montecarlo
+
+Supongamos que tenemos un portafolio que solo contiene un activo, por simplicidad. Queremos estimar el VaR diario de este portafolio al nivel de confianza del 95% utilizando la simulación de Montecarlo.
+
+#### Paso 1: Definir el Modelo de Rendimientos
+
+Primero, definimos un modelo para los rendimientos del activo. En este ejemplo, asumiremos que los rendimientos diarios siguen una distribución normal (esta es una simplificación y, en la práctica, podrían usarse modelos más complejos). Necesitamos dos parámetros para esta distribución: la media ($\mu$) y la desviación estándar ($\sigma$), que representan el rendimiento esperado diario y la volatilidad del activo, respectivamente.
+
+Supongamos que $\mu = 0.001$ (0.1% de rendimiento esperado diario) y $\sigma = 0.02$ (2% de volatilidad diaria).
+
+#### Paso 2: Generar Variables Aleatorias
+
+Generamos una serie de variables aleatorias que siguen la distribución normal definida por $\mu$ y $\sigma$. Estas variables representarán los rendimientos diarios simulados del activo. Por ejemplo, generamos 10,000 rendimientos diarios simulados.
+
+#### Paso 3: Simular Trayectorias de Precio
+
+A partir de un precio inicial del activo (digamos $100), utilizamos los rendimientos simulados para calcular los precios simulados del activo para cada día. El precio en el día $t$ se calcula como $Precio_t = Precio_{t-1} \times (1 + Rendimiento_t)$, donde $Rendimiento_t$ es el rendimiento simulado para el día $t$.
+
+#### Paso 4: Calcular los Cambios en el Valor del Portafolio
+
+Calculamos los cambios en el valor del portafolio para cada día simulado, que simplemente corresponden a los cambios en el precio del activo, dado que el portafolio contiene solo este activo.
+
+#### Paso 5: Estimar el VaR
+
+Ordenamos los cambios en el valor del portafolio de menor a mayor. El VaR al 95% se encuentra en el 5% más bajo de estos cambios. Esto significa que, con un 95% de confianza, esperamos que la pérdida diaria máxima no supere este valor.
+
+### Teoría Detrás del Método
+
+La simulación de Montecarlo es una técnica de análisis numérico que se utiliza para modelar la probabilidad de diferentes resultados en un proceso que no se puede predecir fácilmente debido a la intervención de variables aleatorias. Esta técnica debe su nombre al casino de Montecarlo en Mónaco, famoso por sus juegos de azar, que es un buen análogo de cómo la simulación de Montecarlo utiliza la aleatoriedad y la probabilidad para resolver problemas complejos. A nivel matemático, la simulación de Montecarlo se basa en la generación de números aleatorios y el uso de estos para simular procesos y estimar resultados impredecibles.
+
+#### Fundamentos Teóricos
+
+1. **Ley de los Grandes Números**: La simulación de Montecarlo se fundamenta en la ley de los grandes números, que establece que, a medida que se aumenta el número de pruebas o simulaciones, el promedio de los resultados obtenidos se acercará cada vez más al valor esperado teórico. Esto significa que, al realizar un gran número de simulaciones de procesos aleatorios, podemos obtener una aproximación precisa de sus resultados promedio.
+
+2. **Teoría de Probabilidades y Estadística**: La generación de variables aleatorias que siguen distribuciones de probabilidad específicas es central en la simulación de Montecarlo. Las variables pueden seguir cualquier tipo de distribución (normal, log-normal, uniforme, etc.), dependiendo de la naturaleza del problema y los datos históricos disponibles. Se utilizan técnicas estadísticas para analizar los resultados de las simulaciones y hacer inferencias sobre el sistema modelado.
+
+3. **Muestreo Aleatorio y Muestreo de Importancia**: La simulación de Montecarlo utiliza el muestreo aleatorio para explorar el espacio de todos los posibles resultados de un proceso. En algunos casos, se aplica el muestreo de importancia para enfocar la simulación en áreas del espacio de probabilidad que son más relevantes para el resultado que se desea estimar, mejorando la eficiencia de la simulación.
+
+
+
+### Ejemplo: Ecopetrol
+
+Basado en la simulación de Montecarlo con 10,000 simulaciones, y utilizando los rendimientos históricos del activo de la base de datos proporcionada, se obtienen los siguientes resultados para el activo:
+
+```{python VaR_np_Mc, echo= FALSE, eval=TRUE}
+# Paso 1: Calcular la media y la desviación estándar de los rendimientos históricos para usar como parámetros en nuestra simulación.
+mu = data['Rendimientos'].mean()  # Media de los rendimientos
+sigma = data['Rendimientos'].std()  # Desviación estándar de los rendimientos
+
+# Paso 2: Generar variables aleatorias que sigan una distribución normal con la media y desviación estándar calculadas.
+n_simulaciones = 10000
+rendimientos_simulados = np.random.normal(mu, sigma, n_simulaciones)
+
+# Paso 3: Calcular el VaR al 95% de confianza de las simulaciones.
+# Como estamos trabajando con rendimientos, el VaR se calcula como el percentil 5 (para un 95% de confianza) de los rendimientos simulados.
+vaR_95_simulado = np.percentile(rendimientos_simulados, 5)
+
+mu, sigma, vaR_95_simulado
+```
+
+
+- La media ($\mu$) de los rendimientos históricos es aproximadamente -0.0013, lo que indica un retorno diario promedio ligeramente negativo.
+
+- La desviación estándar ($\sigma$) de los rendimientos es aproximadamente 0.0173, reflejando la volatilidad del activo.
+
+- El Valor en Riesgo (VaR) al 95% de confianza, basado en las simulaciones, es aproximadamente -2.93%. Esto significa que, bajo el modelo asumido para la simulación, hay un 95% de confianza de que la pérdida máxima diaria no excederá el 2.93% del valor del activo.
+
+
+
+# Backtesting del VaR
+
+El **backtesting** es un proceso esencial para validar la precisión y confiabilidad de los modelos de VaR. Consiste en comparar las pérdidas reales observadas con las predicciones del VaR para evaluar si el modelo está funcionando adecuadamente.
+
+## ¿Por qué es Importante el Backtesting?
+
+Un modelo de VaR puede ser matemáticamente correcto pero estar mal especificado para los datos reales. El backtesting permite:
+
+1. **Verificar la precisión**: Determinar si las excepciones (veces que las pérdidas reales superan el VaR) ocurren con la frecuencia esperada.
+2. **Validar el modelo**: Asegurar que el modelo es adecuado para el portafolio y las condiciones de mercado actuales.
+3. **Cumplimiento regulatorio**: Basilea y otras normativas exigen backtesting regular de los modelos de VaR.
+4. **Mejora continua**: Identificar cuándo un modelo necesita ser recalibrado o reemplazado.
+
+## Excepciones y Frecuencia Esperada
+
+Una **excepción** ocurre cuando la pérdida real excede el VaR predicho. Para un VaR al 95% de confianza, esperamos que las excepciones ocurran aproximadamente el 5% del tiempo (1 de cada 20 días). Para un VaR al 99%, esperamos excepciones el 1% del tiempo (1 de cada 100 días).
+
+| Nivel de Confianza | Frecuencia Esperada de Excepciones |
+|-------------------|-----------------------------------|
+| 95%               | 5% (1 en 20 días)                 |
+| 99%               | 1% (1 en 100 días)                |
+
+## Test de Kupiec (Proporción de Excepciones)
+
+El **test de Kupiec** (también conocido como test de razón de verosimilitud o LR test) es una prueba estadística formal para evaluar si la proporción de excepciones observadas es consistente con el nivel de confianza del VaR.
+
+### Hipótesis del Test
+
+- **Hipótesis nula ($H_0$)**: La proporción de excepciones es igual a la tasa esperada ($p = \alpha$).
+- **Hipótesis alternativa ($H_1$)**: La proporción de excepciones es diferente a la tasa esperada ($p \neq \alpha$).
+
+### Estadístico de Prueba
+
+El estadístico de Kupiec se calcula como:
+
+>\[
+LR = -2 \ln\left(\frac{(1-\alpha)^{N-X} \cdot \alpha^X}{(1-\frac{X}{N})^{N-X} \cdot (\frac{X}{N})^X}\right)
+\]
+
+donde:
+- $N$ es el número total de observaciones,
+- $X$ es el número de excepciones observadas,
+- $\alpha$ es la tasa de excepciones esperada (ej. 0.05 para VaR al 95%).
+
+El estadístico $LR$ sigue una distribución chi-cuadrado con 1 grado de libertad ($\chi^2_1$).
+
+### Regla de Decisión
+
+- Si $p\text{-value} < 0.05$: **Rechazar $H_0$** → El modelo no es adecuado.
+- Si $p\text{-value} \geq 0.05$: **No rechazar $H_0$** → El modelo es adecuado.
+
+## Zonas de Semáforo del Backtesting (Basilea)
+
+Basilea clasifica los modelos de VaR en tres zonas según el número de excepciones observadas en 250 días:
+
+| Zona      | Número de Excepciones (VaR 99%) | Implicación                              |
+|-----------|--------------------------------|------------------------------------------|
+| 🟢 Verde  | 0-4                            | Modelo adecuado                          |
+| 🟡 Amarilla | 5-9                          | Revisión requerida, posible penalización |
+| 🔴 Roja   | 10+                            | Modelo no adecuado, acción correctiva    |
+
+## Ejemplo: Backtesting del VaR para Ecopetrol
+
+```{python backtesting_example, echo= TRUE, eval=TRUE}
+from scipy.stats import chi2
+
+# Función para calcular el test de Kupiec
+def kupiec_test(var_predictions, actual_returns, alpha=0.05):
+    """
+    Realiza el test de Kupiec para validar el VaR.
+    
+    Parámetros:
+    - var_predictions: Serie del VaR predicho (valores positivos para pérdidas)
+    - actual_returns: Serie de rendimientos reales (negativos para pérdidas)
+    - alpha: Nivel de significancia esperado (ej. 0.05 para VaR 95%)
+    
+    Retorna:
+    - Diccionario con resultados del test
+    """
+    n = len(actual_returns)
+    
+    # Identificar excepciones (pérdidas reales > VaR)
+    exceptions = actual_returns < -var_predictions
+    x = exceptions.sum()  # Número de excepciones
+    
+    # Proporción observada de excepciones
+    p_obs = x / n
+    
+    # Calcular el estadístico de Kupiec
+    if x == 0 or x == n:
+        lr_stat = np.inf
+    else:
+        p_null = alpha
+        likelihood_ratio = ((1-p_null)**(n-x) * p_null**x) / ((1-p_obs)**(n-x) * p_obs**x)
+        lr_stat = -2 * np.log(likelihood_ratio)
+    
+    # Calcular p-value
+    p_value = 1 - chi2.cdf(lr_stat, df=1)
+    
+    # Decisión
+    reject_null = p_value < 0.05
+    
+    return {
+        'n_observaciones': n,
+        'n_excepciones': x,
+        'prop_esperada': alpha,
+        'prop_observada': p_obs,
+        'LR_statistic': lr_stat,
+        'p_value': p_value,
+        'modelo_adecuado': not reject_null
+    }
+
+# Aplicar backtesting al VaR paramétrico calculado anteriormente
+var_95 = VaR_95  # VaR paramétrico calculado antes
+actual_returns = data['Rendimientos']
+
+# Realizar el test de Kupiec
+resultados_kupiec = kupiec_test(pd.Series([var_95]*len(actual_returns)), actual_returns, alpha=0.05)
+
+# Mostrar resultados
+resultados_df = pd.DataFrame({
+    'Parámetro': list(resultados_kupiec.keys()),
+    'Valor': [f"{v:.6f}" if isinstance(v, float) else str(v) for v in resultados_kupiec.values()]
+})
+fig = ff.create_table(resultados_df)
+fig.show()
+
+# Interpretación
+print("\n=== Interpretación del Backtesting ===")
+print(f"Número de observaciones: {resultados_kupiec['n_observaciones']}")
+print(f"Número de excepciones: {resultados_kupiec['n_excepciones']}")
+print(f"Proporción esperada: {resultados_kupiec['prop_esperada']*100:.1f}%")
+print(f"Proporción observada: {resultados_kupiec['prop_observada']*100:.2f}%")
+print(f"P-value del test: {resultados_kupiec['p_value']:.4f}")
+print(f"\n¿El modelo es adecuado? {'✓ SÍ' if resultados_kupiec['modelo_adecuado'] else '✗ NO'}")
+
+if resultados_kupiec['modelo_adecuado']:
+    print("\nEl número de excepciones es consistente con el nivel de confianza del VaR.")
+else:
+    print("\n⚠️  El modelo está subestimando o sobreestimando el riesgo.")
+```
+
+### Interpretación de Resultados
+
+- **Si el modelo es adecuado**: Las excepciones ocurren con la frecuencia esperada. El modelo puede usarse para la gestión del riesgo.
+
+- **Si el modelo no es adecuado**:
+  - **Demasiadas excepciones**: El modelo está **subestimando** el riesgo. Se debe considerar:
+    - Usar un modelo no paramétrico (simulación histórica).
+    - Incorporar distribuciones con colas pesadas (t-Student).
+    - Aumentar el horizonte de estimación.
+  - **Muy pocas excepciones**: El modelo está **sobreestimando** el riesgo, lo que puede llevar a asignación ineficiente de capital.
+
+## Limitaciones del Backtesting
+
+1. **Requiere datos suficientes**: Se necesitan al menos 250 observaciones (un año de datos diarios) para conclusiones confiables.
+2. **No detecta problemas de timing**: Un modelo puede tener la proporción correcta de excepciones pero fallar en periodos críticos.
+3. **Sensible a outliers**: Una sola pérdida extrema puede distorsionar los resultados.
+4. **No evalúa la magnitud**: El test de Kupiec solo cuenta excepciones, no considera cuán grandes fueron.
+
+
+
+# Limitaciones y Críticas al VaR
+
+A pesar de su amplia adopción, el VaR tiene varias limitaciones importantes que todo profesional de riesgos debe comprender:
+
+## 1. No es una Medida de Riesgo Coherente
+
+Como mencionamos en la sección de Expected Shortfall, el VaR **no satisface la propiedad de subaditividad**. Esto significa que, en algunos casos, el VaR de un portafolio puede ser **mayor** que la suma de los VaRs individuales, lo que contradice el principio básico de que la diversificación reduce el riesgo.
+
+**Ejemplo ilustrativo**: Consideremos dos bonos independientes, cada uno con 4% de probabilidad de default. El VaR al 95% de cada bono individualmente es 0 (porque 4% < 5%). Sin embargo, el portafolio combinado tiene una probabilidad de ~8% de que al menos uno defaultee, por lo que el VaR del portafolio puede ser positivo, violando la subaditividad.
+
+## 2. No Captura el Riesgo de Cola
+
+El VaR no proporciona información sobre la **magnitud** de las pérdidas más allá del umbral de confianza. Dos portafolios pueden tener el mismo VaR al 95% pero riesgos de cola muy diferentes.
+
+**Solución**: Usar Expected Shortfall (CVaR) como medida complementaria.
+
+## 3. Dependencia de Supuestos de Distribución
+
+El método paramétrico asume normalidad, pero los rendimientos financieros reales frecuentemente exhiben:
+- **Colas pesadas** (fat tails): Eventos extremos más probables que en una normal.
+- **Asimetría** (skewness): Tendencia a pérdidas o ganancias extremas.
+- **Agrupamiento de volatilidad** (volatility clustering): Periodos de alta volatilidad seguidos de más alta volatilidad.
+
+**Solución**: 
+- Usar distribuciones más flexibles (t-Student, distribución normal asimétrica).
+- Modelos GARCH para volatilidad cambiante.
+- Métodos no paramétricos.
+
+## 4. Sensibilidad al Periodo de Estimación
+
+El VaR calculado puede variar significativamente dependiendo del periodo histórico usado:
+- Periodos cortenos: Más sensible a eventos recientes.
+- Periodos largos: Pueden incluir datos poco relevantes para las condiciones actuales.
+
+## 5. Riesgo de Modelo
+
+El VaR es tan bueno como el modelo que lo genera. Errores comunes incluyen:
+- Especificación incorrecta de la distribución.
+- Correlaciones mal estimadas (especialmente en crisis, cuando las correlaciones tienden a 1).
+- No considerar cambios estructurales en el mercado.
+
+## 6. Falsa Sensación de Seguridad
+
+El VaR puede crear una **ilusión de precisión** que lleva a los gestores a subestimar el riesgo real. Como dijo Nassim Taleb:
+
+> *"El VaR es como un airbag que funciona todo el tiempo, excepto cuando tienes un accidente."*
+
+## 7. No Captura Riesgos No Lineales
+
+Para portafolios con derivados (opciones, futuros), el VaR lineal puede subestimar significativamente el riesgo porque no captura adecuadamente:
+- Gamma risk (cambios en el delta).
+- Vega risk (cambios en la volatilidad implícita).
+
+## Recomendaciones para el Uso Adecuado del VaR
+
+1. **Usar múltiples métodos**: Comparar VaR paramétrico, histórico y Montecarlo.
+2. **Complementar con Expected Shortfall**: Para capturar el riesgo de cola.
+3. **Realizar backtesting regular**: Validar el modelo continuamente.
+4. **Stress testing**: Evaluar el portafolio bajo escenarios extremos hipotéticos.
+5. **No depender exclusivamente del VaR**: Usarlo como una herramienta más en la gestión integral del riesgo.
+6. **Considerar medidas alternativas**:
+   - Drawdown máximo.
+   - Beta y riesgo sistemático.
+   - Sensibilidades a factores de riesgo (Greeks para derivados).
+
+## Tabla Resumen: Comparación de Métodos de VaR
+
+| Método           | Ventajas                                    | Desventajas                                  | Cuándo Usar                          |
+|------------------|---------------------------------------------|----------------------------------------------|--------------------------------------|
+| **Paramétrico**  | Simple, rápido, fácil de interpretar        | Asume normalidad, no captura colas pesadas   | Portafolios simples, screening rápido |
+| **Histórico**    | No asume distribución, captura colas        | Depende del periodo histórico, lento         | Validación, portafolios complejos    |
+| **Montecarlo**   | Flexible, captura no linealidades           | Computacionalmente intensivo, depende del modelo | Derivados, análisis detallado        |
+| **Bootstrap**    | Proporciona intervalos de confianza         | Intensivo computacionalmente                 | Evaluación de incertidumbre del modelo |
+
+
+
+# Ejercicios
+
+
+
+> **Se sugiere realizar los ejercicios de los capítulos 4 y 5 del texto guía**
